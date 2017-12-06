@@ -7,52 +7,80 @@ template<int m, int n>
 struct mat { 
 	double x[m][n]; 
 	
-	float toFloat() {
+	double toFloat() {
 		if(n == 1) return x[0][0];
 		else return 0;
 	}
 };
 
-// Returns an m-by-m identity matrix. Not used.
-template<int m>
-mat<m,m> identity() {
-    
-    mat<m,m> identity;
-    for(int row = 0; row < m; row++)
-        for(int col = 0; col < m; col++)
-            identity.x[row][col] = ((row == col) ? 1: 0);   // 1 if along the diagonal; otherwise, 0
+// Returns an m-by-m identity matrix.
+template<int n>
+mat<n,n> identity() {
+    mat<n,n> I;
+    for(int row = 0; row < n; row++)
+        for(int col = 0; col < n; col++)
+            I.x[row][col] = ((row == col) ? 1: 0);
             
-    return identity;
+    return I;
 }
 
-// Outputs the values of an m-by-n matrix. Not used within the program.
+// Outputs the values of an m-by-n matrix.
 template<int m, int n>
 void print(const mat<m,n>& u) {
     for(int i = 0; i < m; i++){
-        for(int j = 0; j < n; j++) {
+        for(int j = 0; j < n; j++)
             printf("%0.10f ", u.x[i][j]);
-        }
         printf("\n");
     }
 }
+
+// Scalar-matrix multiplication
+template<int m, int n>
+mat<m,n> operator*(double f, const mat<m,n>& M) {
+
+    mat<m,n> N;
+    
+    for(int row = 0; row < m; row++)
+        for(int col = 0; col < n; col++)
+            N.x[row][col] = f * M.x[row][col];
+    
+    return N;
+
+}   
 
 // Matrix-vector multiplication: [m,n] * [n]
 template<int m, int n>
 vec<m> operator*(const mat<m,n>& M, const vec<n>& u) {
 
-
-    vec<m> w;
+    vec<m> v;
     
     // Initialize vector
-    for(int i = 0; i < m; i++) w.x[i] = 0;
+    for(int i = 0; i < m; i++) v.x[i] = 0;
     
     for(int row = 0; row < m; row++)
         for(int col = 0; col < n; col++)
-            w.x[row] += M.x[row][col] * u.x[col];
+            v.x[row] += M.x[row][col] * u.x[col];
     
-    return w;
+    return v;
 
 }   
+
+// Matrix-Matrix multiplication (brute force)
+template<int m, int n, int p>
+mat<m,p> operator*(const mat<m,n>& M, const mat<n,p> N) {
+	
+	mat<m,p> P;
+	
+	for(int row = 0; row < m; row++)
+		for(int col = 0; col < p; col++)
+			P.x[row][col] = 0;
+		
+	for(int row = 0; row < m; row++)
+		for(int col = 0; col < p; col++)
+			for(int i = 0; i < n; i++)
+				P.x[row][col] += M.x[row][i] * N.x[i][col];
+	return P;
+}
 
 // Finds the first row containing a non-zero element in the specified column. Returns -1 otherwise
 template<int m, int n>
@@ -64,15 +92,12 @@ int getPivotRow(const mat<m,n>& u, const int col) {
 
 template<int m, int n>
 void normalizeRow(mat<m,n>& u, int row, double val) {
-    
     for(int col = 0; col < n; col++)
         u.x[row][col] /= val;
-    
 }
 
 template<int m, int n>
 void swapRows(mat<m,n>& u, int row1, int row2) {
-    
     vec<n> temp;
     for(int col = 0; col < m; col++){
         temp.x[col] = u.x[row1][col];
@@ -132,8 +157,20 @@ mat<m,m> inverse(const mat<m,m>& u) {
     
 }
 
+// Replaced with operator~
 template <int n>
 mat<1,n> transpose(const vec<n>& u) {
+
+	mat<1,n> M;
+	
+	for(int i = 0; i < n; i++)
+		M.x[0][i] = u.x[i];
+	
+	return M;
+}
+
+template <int n>
+mat<1,n> operator~(const vec<n>& u) {
 
 	mat<1,n> M;
 	
