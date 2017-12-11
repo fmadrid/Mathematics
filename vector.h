@@ -12,7 +12,7 @@ struct vec {
 
 	std::string toString() {
 		std::ostringstream oss;for(int i = 0; i < n; i++)
-		oss << std::setprecision(10) << x[i] << " ";
+		oss << std::fixed << std::setprecision(10) << x[i] << " ";
 		return oss.str();
 	}
 
@@ -23,9 +23,6 @@ struct vec {
 		return x;
 	}
 
-	double toFloat() {
-		return x[0];
-	}
 };
 
 // Vector Addition
