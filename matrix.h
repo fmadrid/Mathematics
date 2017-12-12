@@ -48,6 +48,20 @@ mat<m,n> operator*(double f, const mat<m,n>& M) {
 
 }   
 
+// Elementwise Subtraction
+template<int m, int n>
+mat<m,n> operator-(const mat<m,n>& M, const mat<m,n>& N) {
+
+    mat<m,n> R;
+    
+    for(int row = 0; row < m; row++)
+        for(int col = 0; col < n; col++)
+            R.x[row][col] = M.x[row][col] - N.x[row][col];
+    
+    return R;
+
+}
+
 // Matrix-vector multiplication: [m,n] * [n]
 template<int m, int n>
 vec<m> operator*(const mat<m,n>& M, const vec<n>& u) {
