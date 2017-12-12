@@ -29,15 +29,29 @@ mat<3,3> df(const vec<3>& u) {
 	return w;
 }
 
+
+
+// y(t) = -3yt^2
+mat<1,1> dg(const vec<1>& u) {
+	
+	double y = u.x[0];
+	double t = 0.0;
+	mat<1,1> v;
+	v.x[0][0] = 2*y;
+	
+	return v;
+}
+
 template<int n>
 vec<n> newton(vec<n> (*g)(const vec<n>&), mat<n,n> (*dg)(const vec<n>&), const vec<n>& x0, double tol) {
-	vec<n> x_n0 = x0;
-	for(int i = 0; i < 10; i++) {
-		vec<n> x_n1 = x_n0 - (inverse(dg(x_n0)) * g(x_n0));
-		x_n0 = x_n1;
-	}
+	vec<n> x = x0;
+	vec<n> delta;
+	do {
+		delta = (inverse(dg(x)) * g(x));
+		x = x - delta;
+	} while( !(delta < tol));
 	
-    return x_n0;
+    return x;
 }
 
 int main() {
@@ -49,5 +63,7 @@ int main() {
 
     printf("Error: %g Tolerance: %g\n", magnitude(err), tol);
 
+	 vec<1> w = newton(g, dg, {0 + 0.1}, tol);
+	 std::cout << w.toString() << "\n";
     return 0;
 }

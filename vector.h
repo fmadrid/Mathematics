@@ -4,7 +4,7 @@
 #include <iomanip>
 #include <string>
 #include <sstream>
-
+#include<cmath>
 template<int n>
 struct vec {
 
@@ -66,6 +66,15 @@ double innerProduct(const vec<n>& v, const vec<n>&u) {
 	for(int i = 0; i< n; i++)
 		sum += v.x[i] * u.x[i];
 	return sum;
+}
+
+// Component-wise comparison. Returns true if the abs(x_i) <= tol for all x_i in vector v
+template<int n>
+bool operator<(const vec<n>& v, const double tol) {
+	
+	for(int i = 0; i < n; i++) 
+		if(std::abs(v.x[i]) >= tol) return false;
+	return true;
 }
 
 #endif
