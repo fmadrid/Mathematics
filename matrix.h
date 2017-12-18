@@ -7,10 +7,6 @@ template<int m, int n>
 struct mat { 
 	double x[m][n]; 
 	
-	double toFloat() {
-		if(n == 1) return x[0][0];
-		else return 0;
-	}
 };
 
 // Returns an m-by-m identity matrix.

@@ -45,7 +45,7 @@ vec<n> backwardEuler(vec<n> (*g)(const vec<n>&), const vec<n>& y0, double h, int
 	for(int i = 0; i < stepCount; i++){
 		auto f = backwardEulerF(y,h,g);
 		auto df = backwardEulerDF(h,dg);
-		y = y + (h/2)*(g(y) + g(newton(f, y + h * g(y), df)));
+		y = y + h * g(newton(f, y + h * g(y), df));
 	}
 	
     return y;
@@ -105,16 +105,4 @@ vec<n> forwardEuler(vec<n> (*g)(const vec<n>&), const vec<n>& y0, double h, int 
     return y;
 }
 
-////////////////////
-// MidPointMethod
-////////////////////
-template<int n>
-vec<n> midpointMethod(vec<n> (*g)(const vec<n>&), const vec<n>& y0, double h, int stepCount) {
-	vec<n> y = y0;
-	for(int i = 0; i < stepCount; i++) {
-		std::cout << "Iteration: " << i << " " << y.toString() << " | " << (y + (h/2) * y).toString() << "\n";
-		y = y + h * g(y + (h/2) * y);
-	}
-    return y;
-}
 #endif

@@ -1,21 +1,24 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
-#include <iomanip>
-#include <string>
-#include <sstream>
-#include<cmath>
+#include <iomanip>	// std::setprecision
+#include <string>	// std::string
+#include <sstream>	// std:ostringstream	
+#include<cmath>		// std::sqrt
+
 template<int n>
 struct vec {
 
 	double x[n];
 
 	std::string toString() const{
-		std::ostringstream oss;for(int i = 0; i < n; i++)
-		oss << std::fixed << std::setprecision(10) << x[i] << " ";
+		std::ostringstream oss;
+		for(int i = 0; i < n; i++)
+			oss << std::fixed << std::setprecision(10) << x[i] << " ";
 		return oss.str();
 	}
 
+	// Should we check for mag != 0? (i.e. |mag| < epsilon)
 	vec<n> normalize() {
 		double mag = magnitude(x);
 		for(int i = 0; i < n; i++)
@@ -25,7 +28,26 @@ struct vec {
 
 };
 
-// Vector Addition
+
+//////////////////////////////
+// Vector Operations
+//////////////////////////////
+
+template<int n>
+double magnitude(const vec<n>& v) {
+	double sum = 0.0;
+	for(int i = 0; i < n; i++)
+		sum += v.x[i] * v.x[i];
+	return std::sqrt(sum);
+}
+
+
+
+//////////////////////////////
+// Vector-Vector Operations
+//////////////////////////////
+
+// Addition
 template<int n>
 vec<n> operator+(const vec<n>& u, const vec<n>& v) {
 	vec<n> w;
@@ -34,16 +56,42 @@ vec<n> operator+(const vec<n>& u, const vec<n>& v) {
 	return w;
 }
 
-// Vector subtraction
+// Subtraction
 template<int n>
-vec<n> operator-(const vec<n>& u, const vec<n>& v) {
-	vec<n> w;
+vec<n> operator-(const vec<n>& u, const vec<n>& v) { return u + (-1) * v; }
+
+template<int n>
+double innerProduct(const vec<n>& u, const vec<n>&v) {
+	double sum = 0.0;
 	for(int i = 0; i < n; i++)
-		w.x[i] = u.x[i] - v.x[i];
-	return w;
+		sum += u.x[i] * v.x[i];
+	return sum;
 }
 
-// Constant-vector multiplication
+//////////////////////////////////////////////////
+// Constant-Vector / Vector-Constant Operations
+//////////////////////////////////////////////////
+
+// Addition
+template<int n>
+vec<n> operator+(const double c, const vec<n>& v) {
+	vec<n> u;
+	for(int i = 0; i < n; i++) 
+		u.x[i] += c;
+	return u;
+}
+
+template<int n>
+vec<n> operator+(const vec<n>& v, const double c) { return c + v; }
+
+// Subtraction
+template<int n>
+vec<n> operator-(const double c, const vec<n>& v) { return (-1) * c + v; }
+
+template<int n>
+vec<n> operator-(const vec<n>& v, const double c) { return (-1) * c + v; }
+
+// Multiplication
 template<int n>
 vec<n> operator*(double c, const vec<n>& u) {
 	vec<n> w;
@@ -53,20 +101,7 @@ vec<n> operator*(double c, const vec<n>& u) {
 }
 
 template<int n>
-double magnitude(const vec<n>& v) {
-	double sum = 0.0;
-	for(int i = 0; i < n; i++)
-		sum += v.x[i] * v.x[i];
-	return sqrt(sum);
-}
-
-template<int n>
-double innerProduct(const vec<n>& v, const vec<n>&u) {
-	double sum = 0.0;
-	for(int i = 0; i< n; i++)
-		sum += v.x[i] * u.x[i];
-	return sum;
-}
+vec<n> operator*(const vec<n>& u, double c) { return c * u; }
 
 // Component-wise comparison. Returns true if the abs(x_i) <= tol for all x_i in vector v
 template<int n>
@@ -77,20 +112,6 @@ bool operator<(const vec<n>& v, const double tol) {
 	return true;
 }
 
-// Component-wise addition. Returns true if the abs(x_i) <= tol for all x_i in vector v
-template<int n>
-vec<n> operator+(const vec<n>& v, const double a) {
-	vec<n> u;
-	for(int i = 0; i < n; i++) 
-		u.x[i] += a;
-	return u;
-}
 
-template<int n>
-double dot(const vec<n>& u, const vec<n>& v) {
-	double sum = 0.0;
-	for(int i = 0; i < n; i++)
-		sum += u.x[0] * v.x[0];
-	return sum;
 #endif
 
