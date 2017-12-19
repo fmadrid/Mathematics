@@ -11,7 +11,7 @@ vec<2> F(const vec<2>& u) {
 	
 	vec<2> v;
 	v.x[0] = x;
-	v.x[1] = exp(x * x * x);
+	v.x[1] = exp(-x * x * x);
 	
 	return v;
 }

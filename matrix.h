@@ -9,16 +9,9 @@ struct mat {
 	
 };
 
-// Returns an m-by-m identity matrix.
-template<int n>
-mat<n,n> identity() {
-    mat<n,n> I;
-    for(int row = 0; row < n; row++)
-        for(int col = 0; col < n; col++)
-            I.x[row][col] = ((row == col) ? 1: 0);
-            
-    return I;
-}
+//////////////////////////////
+// Matrix Operations
+//////////////////////////////
 
 // Outputs the values of an m-by-n matrix.
 template<int m, int n>
@@ -28,68 +21,6 @@ void print(const mat<m,n>& u) {
             printf("%0.10f ", u.x[i][j]);
         printf("\n");
     }
-}
-
-// Scalar-matrix multiplication
-template<int m, int n>
-mat<m,n> operator*(double f, const mat<m,n>& M) {
-
-    mat<m,n> N;
-    
-    for(int row = 0; row < m; row++)
-        for(int col = 0; col < n; col++)
-            N.x[row][col] = f * M.x[row][col];
-    
-    return N;
-
-}   
-
-// Elementwise Subtraction
-template<int m, int n>
-mat<m,n> operator-(const mat<m,n>& M, const mat<m,n>& N) {
-
-    mat<m,n> R;
-    
-    for(int row = 0; row < m; row++)
-        for(int col = 0; col < n; col++)
-            R.x[row][col] = M.x[row][col] - N.x[row][col];
-    
-    return R;
-
-}
-
-// Matrix-vector multiplication: [m,n] * [n]
-template<int m, int n>
-vec<m> operator*(const mat<m,n>& M, const vec<n>& u) {
-
-    vec<m> v;
-    
-    // Initialize vector
-    for(int i = 0; i < m; i++) v.x[i] = 0;
-    
-    for(int row = 0; row < m; row++)
-        for(int col = 0; col < n; col++)
-            v.x[row] += M.x[row][col] * u.x[col];
-    
-    return v;
-
-}   
-
-// Matrix-Matrix multiplication (brute force)
-template<int m, int n, int p>
-mat<m,p> operator*(const mat<m,n>& M, const mat<n,p> N) {
-	
-	mat<m,p> P;
-	
-	for(int row = 0; row < m; row++)
-		for(int col = 0; col < p; col++)
-			P.x[row][col] = 0;
-		
-	for(int row = 0; row < m; row++)
-		for(int col = 0; col < p; col++)
-			for(int i = 0; i < n; i++)
-				P.x[row][col] += M.x[row][i] * N.x[i][col];
-	return P;
 }
 
 // Finds the first row containing a non-zero element in the specified column. Returns -1 otherwise
@@ -167,27 +98,95 @@ mat<m,m> inverse(const mat<m,m>& u) {
     
 }
 
-// Replaced with operator~
-template <int n>
-mat<1,n> transpose(const vec<n>& u) {
+//////////////////////////////
+// Matrix-Matrix Operations
+//////////////////////////////
+// Addition
+template<int m, int n>
+mat<m,n> operator+(const mat<m,n>& M, const mat<m,n>& N) {
 
-	mat<1,n> M;
-	
-	for(int i = 0; i < n; i++)
-		M.x[0][i] = u.x[i];
-	
-	return M;
+    mat<m,n> R;
+    
+    for(int row = 0; row < m; row++)
+        for(int col = 0; col < n; col++)
+            R.x[row][col] = M.x[row][col] + N.x[row][col];
+    
+    return R;
+
 }
 
-template <int n>
-mat<1,n> operator~(const vec<n>& u) {
+// Subtraction
+template<int m, int n>
+mat<m,n> operator-(const mat<m,n>& M, const mat<m,n>& N) { return M + (-1) * N; }
 
-	mat<1,n> M;
-	
-	for(int i = 0; i < n; i++)
-		M.x[0][i] = u.x[i];
-	
-	return M;
+template<int m, int n>
+mat<m,n> operator-=(mat<m,n>& M, const mat<m,n>& N) {
+
+    for(int row = 0; row < m; row++)
+        for(int col = 0; col < n; col++)
+            M.x[row][col] -= N.x[row][col];
+    
+    return M;
+
 }
+
+// Multiplication (brute force)
+template<int m, int n, int p>
+mat<m,p> operator*(const mat<m,n>& M, const mat<n,p> N) {
+	
+	mat<m,p> P;
+	
+	for(int row = 0; row < m; row++)
+		for(int col = 0; col < p; col++)
+			P.x[row][col] = 0;
+		
+	for(int row = 0; row < m; row++)
+		for(int col = 0; col < p; col++)
+			for(int i = 0; i < n; i++)
+				P.x[row][col] += M.x[row][i] * N.x[i][col];
+	return P;
+}
+
+//////////////////////////////
+// Matrix-Scalar Operations
+//////////////////////////////
+
+// Multiplication
+template<int m, int n>
+mat<m,n> operator*(double c, const mat<m,n>& M) {
+
+    mat<m,n> N;
+    
+    for(int row = 0; row < m; row++)
+        for(int col = 0; col < n; col++)
+            N.x[row][col] = c * M.x[row][col];
+    
+    return N;
+
+}  
+
+template<int m, int n>
+mat<m,n> operator*(const mat<m,n>& M, double c) { return c * M; }
+
+//////////////////////////////
+// Matrix-Vector Operations
+//////////////////////////////
+
+// Multiplication: [m,n] * [n] = [m]
+template<int m, int n>
+vec<m> operator*(const mat<m,n>& M, const vec<n>& u) {
+
+    vec<m> v;
+    
+    // Initialize vector
+    for(int i = 0; i < m; i++) v.x[i] = 0;
+    
+    for(int row = 0; row < m; row++)
+        for(int col = 0; col < n; col++)
+            v.x[row] += M.x[row][col] * u.x[col];
+    
+    return v;
+
+}   
 
 #endif

@@ -4,7 +4,7 @@
 #include <iomanip>	// std::setprecision
 #include <string>	// std::string
 #include <sstream>	// std:ostringstream	
-#include<cmath>		// std::sqrt
+#include <cmath>		// std::sqrt
 
 template<int n>
 struct vec {
@@ -56,6 +56,13 @@ vec<n> operator+(const vec<n>& u, const vec<n>& v) {
 	return w;
 }
 
+template<int n>
+vec<n>& operator+=(vec<n>& lhs, const vec<n>& rhs) {
+	for(int i = 0; i < n; i++)
+		lhs.x[i] += rhs.x[i];
+	return lhs;
+}
+	
 // Subtraction
 template<int n>
 vec<n> operator-(const vec<n>& u, const vec<n>& v) { return u + (-1) * v; }
