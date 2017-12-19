@@ -54,16 +54,16 @@ int main(int argc, char** argv) {
 	vec<2> solution = F(x0 + stepSize*stepCount);
 	
 	printf("\n---Parameters---\n");
-	std::cout << "x0:        " << x0.toString() << "\n";
+	std::cout << "x0:        " << x0            << "\n";
 	std::cout << "stepSize:  " << stepSize      << "\n";
 	std::cout << "stepCount: " << stepCount     << "\n";
 	
 	printf("\n---Results---\n");
-	std::cout << "Solution :          " << F(x0 + stepSize*stepCount).toString() << "\n";
+	std::cout << "Solution :          " << F(x0 + stepSize*stepCount) << "\n";
 
-	std::cout << "Forward Euler:      " << eTest.toString() << "Error: " << magnitude(eTest - solution) << "\n";
-	std::cout << "Backwards Euler:    " << bTest.toString() << "Error: " << magnitude(bTest - solution) << "\n";
-	std::cout << "Trapezoidal Method: " << tTest.toString() << "Error: " << magnitude(tTest - solution) << "\n";
+	std::cout << "Forward Euler:      " << eTest << " Error: " << magnitude(eTest - solution) << "\n";
+	std::cout << "Backwards Euler:    " << bTest << " Error: " << magnitude(bTest - solution) << "\n";
+	std::cout << "Trapezoidal Method: " << tTest << " Error: " << magnitude(tTest - solution) << "\n";
 	
 	
 }

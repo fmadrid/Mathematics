@@ -1,11 +1,31 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
+#include <iostream>
 #include "vector.h"
 
 template<int m, int n>
 struct mat { 
 	double x[m][n]; 
+
+	// Replaces block [x0,x0+r) x [y0,y0+c) with the contents of M
+	template<int r, int s>
+	mat<m,n> replaceBlock(const mat<r,c> M, int x0, int y0) {
+		for(int row = 0; row < r; row++)
+			for(int col = 0; col < c; col++)
+				x[x0+row][y0+col] = M.x[row][col];
+		return *this;
+	}
+
+	friend std::ostream& operator<<(std::ostream& out, const mat<m,n>& M) {
+		for(int i = 0; i < m; i++) {
+			for(int j = 0; j < n; j++)
+				out << M.x[i][j] << " ";
+			out << "\n";
+		}
+
+		return out;
+	}
 	
 };
 
@@ -13,15 +33,6 @@ struct mat {
 // Matrix Operations
 //////////////////////////////
 
-// Outputs the values of an m-by-n matrix.
-template<int m, int n>
-void print(const mat<m,n>& u) {
-    for(int i = 0; i < m; i++){
-        for(int j = 0; j < n; j++)
-            printf("%0.10f ", u.x[i][j]);
-        printf("\n");
-    }
-}
 
 // Finds the first row containing a non-zero element in the specified column. Returns -1 otherwise
 template<int m, int n>
@@ -115,7 +126,6 @@ mat<m,n> operator+(const mat<m,n>& M, const mat<m,n>& N) {
 
 }
 
-// Subtraction
 template<int m, int n>
 mat<m,n> operator-(const mat<m,n>& M, const mat<m,n>& N) { return M + (-1) * N; }
 
@@ -130,7 +140,6 @@ mat<m,n> operator-=(mat<m,n>& M, const mat<m,n>& N) {
 
 }
 
-// Multiplication (brute force)
 template<int m, int n, int p>
 mat<m,p> operator*(const mat<m,n>& M, const mat<n,p> N) {
 	
@@ -151,7 +160,6 @@ mat<m,p> operator*(const mat<m,n>& M, const mat<n,p> N) {
 // Matrix-Scalar Operations
 //////////////////////////////
 
-// Multiplication
 template<int m, int n>
 mat<m,n> operator*(double c, const mat<m,n>& M) {
 
@@ -168,25 +176,6 @@ mat<m,n> operator*(double c, const mat<m,n>& M) {
 template<int m, int n>
 mat<m,n> operator*(const mat<m,n>& M, double c) { return c * M; }
 
-//////////////////////////////
-// Matrix-Vector Operations
-//////////////////////////////
 
-// Multiplication: [m,n] * [n] = [m]
-template<int m, int n>
-vec<m> operator*(const mat<m,n>& M, const vec<n>& u) {
-
-    vec<m> v;
-    
-    // Initialize vector
-    for(int i = 0; i < m; i++) v.x[i] = 0;
-    
-    for(int row = 0; row < m; row++)
-        for(int col = 0; col < n; col++)
-            v.x[row] += M.x[row][col] * u.x[col];
-    
-    return v;
-
-}   
 
 #endif

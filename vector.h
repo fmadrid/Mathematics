@@ -4,26 +4,21 @@
 #include <iomanip>	// std::setprecision
 #include <string>	// std::string
 #include <sstream>	// std:ostringstream	
-#include <cmath>		// std::sqrt
+#include <cmath>	// std::sqrt
 
 template<int n>
 struct vec {
 
 	double x[n];
+	friend std::ostream& operator << (std::ostream &out, const vec<n>& u) {
+		out << "[";
+		for(int i = 0; i < n; i++) {
+			out << std::fixed << std::setprecision(10) << u.x[i];
+			if(i != n-1) out << " ";
+		}
+		out << "]";
+		return out;
 
-	std::string toString() const{
-		std::ostringstream oss;
-		for(int i = 0; i < n; i++)
-			oss << std::fixed << std::setprecision(10) << x[i] << " ";
-		return oss.str();
-	}
-
-	// Should we check for mag != 0? (i.e. |mag| < epsilon)
-	vec<n> normalize() {
-		double mag = magnitude(x);
-		for(int i = 0; i < n; i++)
-			x[i] /= mag;
-		return x;
 	}
 
 };
@@ -62,7 +57,7 @@ vec<n>& operator+=(vec<n>& lhs, const vec<n>& rhs) {
 		lhs.x[i] += rhs.x[i];
 	return lhs;
 }
-	
+
 // Subtraction
 template<int n>
 vec<n> operator-(const vec<n>& u, const vec<n>& v) { return u + (-1) * v; }
@@ -113,7 +108,7 @@ vec<n> operator*(const vec<n>& u, double c) { return c * u; }
 // Component-wise comparison. Returns true if the abs(x_i) <= tol for all x_i in vector v
 template<int n>
 bool operator<(const vec<n>& v, const double tol) {
-	
+
 	for(int i = 0; i < n; i++) 
 		if(std::abs(v.x[i]) >= tol) return false;
 	return true;

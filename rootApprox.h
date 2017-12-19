@@ -18,7 +18,7 @@ vec<n> newton(std::function<vec<n>(const vec<n>&)> &g, const vec<n>& x0, std::fu
 		x = x - delta;
 		
 		if(++iterations >= MAX_ITERATIONS) {
-			std::cerr << "[NEWTON] Warning: Reached MAXIMUM_ITERATIONS. delta = " << delta.toString() << "\n";
+			std::cerr << "[NEWTON] Warning: Reached MAXIMUM_ITERATIONS. delta = " << delta << "\n";
 			break;
 		}
 		
