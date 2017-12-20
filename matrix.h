@@ -8,8 +8,14 @@ template<int m, int n>
 struct mat { 
 	double x[m][n]; 
 
+	mat() {
+		for(int i = 0; i < m; i++)
+			for(int j = 0; j < n; j++)
+				x[i][j] = 0;
+	}
+	
 	// Replaces block [x0,x0+r) x [y0,y0+c) with the contents of M
-	template<int r, int s>
+	template<int r, int c>
 	mat<m,n> replaceBlock(const mat<r,c> M, int x0, int y0) {
 		for(int row = 0; row < r; row++)
 			for(int col = 0; col < c; col++)
@@ -176,6 +182,25 @@ mat<m,n> operator*(double c, const mat<m,n>& M) {
 template<int m, int n>
 mat<m,n> operator*(const mat<m,n>& M, double c) { return c * M; }
 
+//////////////////////////////
+// Matrix-Vector Operations
+//////////////////////////////
 
+// Multiplication: [m,n] * [n] = [m]
+template<int m, int n>
+vec<m> operator*(const mat<m,n>& M, const vec<n>& u) {
+
+    vec<m> v;
+    
+    // Initialize vector
+    for(int i = 0; i < m; i++) v.x[i] = 0;
+    
+    for(int row = 0; row < m; row++)
+        for(int col = 0; col < n; col++)
+            v.x[row] += M.x[row][col] * u.x[col];
+    
+    return v;
+
+}   
 
 #endif
