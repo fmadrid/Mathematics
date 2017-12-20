@@ -1,7 +1,7 @@
 /*
 Author: 		Frank Madrid
 Description:	Contains implementations for first-order numerical procedures for solving ordinary differential equations
-with a given initial value.
+              with a given initial value.
 Last Edited:	12/18/2017
 
 TO-DO:
@@ -29,18 +29,17 @@ std::function<vec<n>(const vec<n>&)> backwardEulerF(const vec<n>& u, double h, v
 	};
 
 	return f;
-}i
+}
 
 template<int n>
 std::function<mat<n,n>(const vec<n>&)> backwardEulerDF(double& h, mat<n,n> (*dg)(const vec<n>&)) {
 
 	auto df = [h, dg](const vec<n>& x) -> mat<n,n> {
 		mat<n,n> M;
-		for(int row = 0; row < n; row++)
-			for(int col = 0; col < n; col++)
-				M.x[row][col] = ((row == col) ? 1: 0);
-
-		M = M - h * dg(x);
+    for(int i = 0; i < n; i++)
+      M.x[i][i] = 1;
+		
+    M = M - h * dg(x);
 
 		return M;
 	};
@@ -56,7 +55,6 @@ vec<n> backwardEuler(vec<n> (*g)(const vec<n>&), const vec<n>& y0, double h, int
 	for(int i = 0; i < stepCount; i++) {
 		auto f  = backwardEulerF(y,h,g);				// Defines the function: f(y_{n+1}) = y_{n+1} - y_{n} + h * g(y_{n}) such that y_{N} = y.
 		auto df = backwardEulerDF(h,dg);				// Defines the function: df(y_{n+1}) = 1 - h * f'(y_{n+1});  
-
 		y += h * g(newton(f, y + h * g(y), df));		// Solves the function f(y_{n+1}) = 0 with initial guess y_{n+1} = y + h * g(y)
 	}
 

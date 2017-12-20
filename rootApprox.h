@@ -22,7 +22,7 @@ vec<n> newton(std::function<vec<n>(const vec<n>&)> &g, const vec<n>& x0, std::fu
 			break;
 		}
 		
-	} while( !(delta < TOLERANCE));
+	} while( !(maxDistance(delta) < TOLERANCE));
 	
     return x;
 }

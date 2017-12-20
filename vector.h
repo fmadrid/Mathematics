@@ -29,20 +29,15 @@ struct vec {
 //////////////////////////////
 
 template<int n>
-double magnitude(const vec<n>& v) {
-	double sum = 0.0;
-	for(int i = 0; i < n; i++)
-		sum += v.x[i] * v.x[i];
-	return std::sqrt(sum);
-}
+double magnitude(const vec<n>& v) { return std::sqrt(dot(v,v));}
 
-
+template<int n>
+double magnitude_squared(const vec<n>& v) { return dot(v,v); }
 
 //////////////////////////////
 // Vector-Vector Operations
 //////////////////////////////
 
-// Addition
 template<int n>
 vec<n> operator+(const vec<n>& u, const vec<n>& v) {
 	vec<n> w;
@@ -60,7 +55,15 @@ vec<n>& operator+=(vec<n>& lhs, const vec<n>& rhs) {
 
 // Subtraction
 template<int n>
-vec<n> operator-(const vec<n>& u, const vec<n>& v) { return u + (-1) * v; }
+vec<n> operator-(const vec<n>& u, const vec<n>& v) {
+	vec<n> w;
+	for(int i = 0; i < n; i++)
+		w.x[i] = u.x[i] - v.x[i];
+	return w;
+}
+
+template<int n>
+double dot(const vec<n>& u, const vec<n>&v) { return innerProduct(u,v); }
 
 template<int n>
 double innerProduct(const vec<n>& u, const vec<n>&v) {
@@ -86,14 +89,12 @@ vec<n> operator+(const double c, const vec<n>& v) {
 template<int n>
 vec<n> operator+(const vec<n>& v, const double c) { return c + v; }
 
-// Subtraction
 template<int n>
 vec<n> operator-(const double c, const vec<n>& v) { return (-1) * c + v; }
 
 template<int n>
 vec<n> operator-(const vec<n>& v, const double c) { return (-1) * c + v; }
 
-// Multiplication
 template<int n>
 vec<n> operator*(double c, const vec<n>& u) {
 	vec<n> w;
@@ -105,15 +106,13 @@ vec<n> operator*(double c, const vec<n>& u) {
 template<int n>
 vec<n> operator*(const vec<n>& u, double c) { return c * u; }
 
-// Component-wise comparison. Returns true if the abs(x_i) <= tol for all x_i in vector v
 template<int n>
-bool operator<(const vec<n>& v, const double tol) {
-
-	for(int i = 0; i < n; i++) 
-		if(std::abs(v.x[i]) >= tol) return false;
-	return true;
+double maxDistance(const vec<n>& u) {
+  double max = u.x[1];
+  for(int i = 2; i < n; i++)
+    max = (max < u.x[i]) ? u.x[i] : max;
+  return max;
 }
-
 
 #endif
 
