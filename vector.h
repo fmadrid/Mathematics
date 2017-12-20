@@ -108,9 +108,9 @@ vec<n> operator*(const vec<n>& u, double c) { return c * u; }
 
 template<int n>
 double maxDistance(const vec<n>& u) {
-  double max = u.x[1];
+  double max = std::abs(u.x[1]);
   for(int i = 2; i < n; i++)
-    max = (max < u.x[i]) ? u.x[i] : max;
+    max = (max < std::abs(u.x[i])) ? std::abs(u.x[i]) : max;
   return max;
 }
 
