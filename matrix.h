@@ -7,192 +7,256 @@
 
 template<int m, int n>
 struct mat { 
-  double x[m][n]; 
+   double x[m][n]; 
 
-  mat() {
-    for(int i = 0; i < m; i++)
-      for(int j = 0; j < n; j++)
-        x[i][j] = 0;
-  }
-  
-  // Replaces block [x0,x0+r) x [y0,y0+c) with the contents of M
-  template<int r, int c>
-  mat<m,n> replaceBlock(const mat<r,c> M, int x0, int y0) {
-    assert(x0 + r <- m && y0 + c <= n && x0 >= 0 && y0 >= 0);
-    for(int i = 0; i < r; i++)
-      for(int j = 0; j < c; j++)
-        x[x0+i][y0+j] = M.x[i][j];
-    return *this;
-  }
+   mat() {
+      for(int i = 0; i < m; i++)
+         for(int j = 0; j < n; j++)
+            x[i][j] = 0;
+   }
 
-  friend std::ostream& operator<<(std::ostream& out, const mat<m,n>& M) {
-    out << "[";
-    for(int i = 0; i < m; i++) {
-      for(int j = 0; j < n; j++) {
-        out << M.x[i][j];
-        if(j != n-1) out << ", ";
-    }
-      if(i != m-1) out <<"; ";
-    }
-    out << "]";
+   // Replaces block [x0,x0+r) x [y0,y0+c) with the contents of M
+   template<int row, int col>
+      mat<m,n> replaceBlock(const mat<row,col> M, int x0, int y0) {
+         assert(x0 + row <- m && y0 + col <= n && x0 >= 0 && y0 >= 0);
+         for(int i = 0; i < row; i++)
+            for(int j = 0; j < col; j++)
+               x[x0+i][y0+j] = M.x[i][j];
+         return *this;
+      }
 
-    return out;
-  }
-  
+   vec<n> getRow(const int& row) {
+      vec<n> v;
+      for(int i = 0; i < n; i++)
+         v.x[i] = x[row][i];
+      return v;
+   }
+
+   void setRow(const int& row, const vec<n>& v) {
+      for(int col = 0; col < n; col++)
+         x[row][col] = v.x[col];
+
+      return;
+   }
+
 };
 
 //////////////////////////////
 // Matrix Operations
 //////////////////////////////
 
+template<int m, int n>
+std::ostream& operator<<(std::ostream& out, const mat<m,n>& M) {
+   out << "[";
+   for(int row = 0; row < m; row++) {
+      for(int col = 0; col < n; col++) {
+         out << M.x[row][col];
+         if(col != n-1) out << ", ";
+      }
+      if(row != m-1) out <<"; ";
+   }
+   out << "]";
 
+   return out;
+}
 // Finds the first r containing a non-zero element in the specified cumn. Returns -1 otherwise
 template<int m, int n>
 int getPivotRow(const mat<m,n>& u, const int c) {
-    for(int r = c; r < m; r++)
-        if(u.x[r][c] != 0) return r;
-    return -1;
+   for(int row = c; row < m; row++)
+      if(u.x[row][c] != 0) return row;
+   return -1;
 }
 
 template<int m, int n>
-void normalizeRow(mat<m,n>& u, int r, double val) {
-    for(int c = 0; c < n; c++)
-        u.x[r][c] /= val;
+void normalizeRow(mat<m,n>& u, int row, double val) {
+   for(int col = 0; col < n; col++)
+      u.x[row][col] /= val;
 }
 
 template<int m, int n>
-void swapRows(mat<m,n>& u, int r1, int r2) {
-    vec<n> temp;
-    for(int c = 0; c < m; c++){
-        temp.x[c] = u.x[r1][c];
-        u.x[r1][c] = u.x[r2][c];
-        u.x[r2][c] = temp.x[c];
-    }
+void swapRows(mat<m,n>& u, int row1, int row2) {
+   vec<n> temp;
+   for(int col = 0; col < m; col++){
+      temp.x[col] = u.x[row1][col];
+      u.x[row1][col] = u.x[row2][col];
+      u.x[row2][col] = temp.x[col];
+   }
 }
-    
+
 template<int m, int n>
-void reduceRow(mat<m,n>& u, int pivotRow, int r, double val) {
-    for(int c = 0; c < n; c++)
-        u.x[r][c] = u.x[pivotRow][c] * val - u.x[r][c];
+void reduceRow(mat<m,n>& u, int pivotRow, int row, double val) {
+   for(int col = 0; col < n; col++)
+      u.x[row][col] = u.x[pivotRow][col] * val - u.x[row][col];
 }
 
 // Calculates the inverse of the matrix u by augmenting u with I and performing Gaussian Elimination.
 template<int m>
 mat<m,m> inverse(const mat<m,m>& u) {
-    
-    mat<m,2*m> w;
-    
-    // Copy u into the left half matrix w 
-    for(int r = 0; r < m; r++)
-        for(int c = 0; c < m; c++)
-            w.x[r][c] = u.x[r][c];
-    
-    // Augment matrix w with the identity matrix
-    for(int r = 0; r < m; r++)
-        for(int c = m; c < 2*m; c++)
-            w.x[r][c] = ((r == c - m) ? 1: 0);
-    
-    // For each r in w
-    for(int r = 0; r < m; r++) {
-        
-        int pivotRow = getPivotRow(w, r);
-        
-        // If the current r is not the pivot r, then swap rs.
-        if(r != pivotRow) swapRows(w, r, pivotRow);
-        
-        // Normalize the current r
-        normalizeRow(w, r, w.x[r][r]);
-        
-        // Reduce each r in the matrix not the current r
-        for(int j = 0; j < m; j++)
-            if(j != r) reduceRow(w, r, j, w.x[j][r]);
-    }
-    
-    // Normalize each r
-    for(int i = 0; i < m; i++) normalizeRow(w, i, w.x[i][i]);
-    
-    // Copy the augmented half the matrix
-    mat<m,m> inv;
-    for(int r = 0; r < m; r++)
-        for(int c = m; c < 2*m; c++)
-            inv.x[r][c-m] = w.x[r][c];
-        
-    return inv;
-    
+
+   mat<m,2*m> w;
+
+   // Copy u into the left half matrix w 
+   for(int row = 0; row < m; row++)
+      for(int col = 0; col < m; col++)
+         w.x[row][col] = u.x[row][col];
+
+   // Augment matrix w with the identity matrix
+   for(int row = 0; row < m; row++)
+      for(int col = m; col < 2*m; col++)
+         w.x[row][col] = ((row == col - m) ? 1: 0);
+
+   // For each r in w
+   for(int row = 0; row < m; row++) {
+
+      int pivotRow = getPivotRow(w, row);
+
+      // If the current r is not the pivot r, then swap rs.
+      if(row != pivotRow) swapRows(w, row, pivotRow);
+
+      // Normalize the current r
+      normalizeRow(w, row, w.x[row][row]);
+
+      // Reduce each r in the matrix not the current r
+      for(int j = 0; j < m; j++)
+         if(j != row) reduceRow(w, row, j, w.x[j][row]);
+   }
+
+   // Normalize each r
+   for(int i = 0; i < m; i++) normalizeRow(w, i, w.x[i][i]);
+
+   // Copy the augmented half the matrix
+   mat<m,m> inv;
+   for(int row = 0; row < m; row++)
+      for(int col = m; col < 2*m; col++)
+         inv.x[row][col-m] = w.x[row][col];
+
+   return inv;
+
 }
 
 //////////////////////////////
 // Matrix-Matrix Operations
 //////////////////////////////
-// Addition
+
 template<int m, int n>
 mat<m,n> operator+(const mat<m,n>& M, const mat<m,n>& N) {
 
-    mat<m,n> R;
-    
-    for(int r = 0; r < m; r++)
-        for(int c = 0; c < n; c++)
-            R.x[r][c] = M.x[r][c] + N.x[r][c];
-    
-    return R;
+   mat<m,n> R;
+
+   for(int row = 0; row < m; row++)
+      for(int col = 0; col < n; col++)
+         R.x[row][col] = M.x[row][col] + N.x[row][col];
+
+   return R;
 
 }
+
+template<int m, int n>
+mat<m,n> operator+=(mat<m,n>& lhs, const mat<m,n>& rhs) {
+
+   for(int row = 0; row < m; row++)
+      for(int col = 0; col < n; col++)
+         lhs.x[row][col] += rhs.x[row][col];
+
+   return lhs;
+
+}
+
 
 template<int m, int n>
 mat<m,n> operator-(const mat<m,n>& M, const mat<m,n>& N) { 
 
 
-    mat<m,n> R;
-    
-    for(int r = 0; r < m; r++)
-        for(int c = 0; c < n; c++)
-            R.x[r][c] = M.x[r][c] - N.x[r][c];
-    
-    return R;
+   mat<m,n> R;
+
+   for(int row = 0; row < m; row++)
+      for(int col = 0; col < n; col++)
+         R.x[row][col] = M.x[row][col] - N.x[row][col];
+
+   return R;
 
 }
 
 template<int m, int n>
 mat<m,n> operator-=(mat<m,n>& M, const mat<m,n>& N) {
 
-    for(int r = 0; r < m; r++)
-        for(int c = 0; c < n; c++)
-            M.x[r][c] -= N.x[r][c];
-    
-    return M;
+   for(int row = 0; row < m; row++)
+      for(int col = 0; col < n; col++)
+         M.x[row][col] -= N.x[row][col];
+
+   return M;
 
 }
 
 template<int m, int n, int p>
 mat<m,p> operator*(const mat<m,n>& M, const mat<n,p> N) {
-  
-  mat<m,p> P;
-  
-  for(int r = 0; r < m; r++)
-    for(int c = 0; c < p; c++)
-      P.x[r][c] = 0;
-    
-  for(int r = 0; r < m; r++)
-    for(int c = 0; c < p; c++)
-      for(int i = 0; i < n; i++)
-        P.x[r][c] += M.x[r][i] * N.x[i][c];
-  return P;
+
+   mat<m,p> P;
+
+   for(int row = 0; row < m; row++)
+      for(int col = 0; col < p; col++)
+         P.x[row][col] = 0;
+
+   for(int row = 0; row < m; row++)
+      for(int col = 0; col < p; col++)
+         for(int i = 0; i < n; i++)
+            P.x[row][col] += M.x[row][i] * N.x[i][col];
+
+   return P;
+
 }
 
 //////////////////////////////
 // Matrix-Scalar Operations
 //////////////////////////////
 
+// Component-wise Addition (Right)
+template<int m, int n>
+mat<m,n> operator+(const double& c, const mat<m,n>& M) {
+
+   mat<m,n> N;
+
+   for(int row = 0; row < m; row++)
+      for(int col = 0; col < n; col++)
+         N.x[row][col] = M.x[row][col] + c;
+
+   return N;
+
+}
+
+// Component-wise Addition (Left)
+template<int m, int n>
+mat<m,n> operator+(const mat<m,n>& M, const double& c) { return c + M; }
+
+// Component wise Subtraction (Right)
+template<int m, int n>
+mat<m,n> operator-(const mat<m,n>& M, const double&c) { return M + (-1) * c; }
+
+// Component-wise Subtraction (Left)
+template<int m, int n>
+mat<m,n> operator-(const double& c, const mat<m,n>& M) {
+
+   mat<m,n> N;
+
+   for(int row = 0; row < m; row++)
+      for(int col = 0; col < n; col++)
+         N.x[row][col] = c - M.x[row][col];
+
+   return N;
+
+}
+
+// Component-wise Multiplicaiton
 template<int m, int n>
 mat<m,n> operator*(double c, const mat<m,n>& M) {
 
-    mat<m,n> N;
-    
-    for(int r = 0; r < m; r++)
-        for(int c = 0; c < n; c++)
-            N.x[r][c] = c * M.x[r][c];
-    
-    return N;
+   mat<m,n> N;
+
+   for(int row = 0; row < m; row++)
+      for(int col = 0; col < n; col++)
+         N.x[row][col] = c * M.x[row][col];
+
+   return N;
 
 }  
 
@@ -207,16 +271,13 @@ mat<m,n> operator*(const mat<m,n>& M, double c) { return c * M; }
 template<int m, int n>
 vec<m> operator*(const mat<m,n>& M, const vec<n>& u) {
 
-    vec<m> v;
-    
-    // Initialize vector
-    for(int i = 0; i < m; i++) v.x[i] = 0;
-    
-    for(int r = 0; r < m; r++)
-        for(int c = 0; c < n; c++)
-            v.x[r] += M.x[r][c] * u.x[c];
-    
-    return v;
+   vec<m> v = {};
+
+   for(int row = 0; row < m; row++)
+      for(int col = 0; col < n; col++)
+         v.x[row] += M.x[row][col] * u.x[col];
+
+   return v;
 
 }   
 
