@@ -1,0 +1,46 @@
+# Performs a diff on the output of of a unit test.
+
+#!/bin/bash
+EXECUTABLE=$1
+ITERATIONS=$2
+FILENAME=$3
+
+#Validate command line input
+if [ "$#" -ne 3 ]; then
+   echo "Usage: ./unitTest [EXECUTABLE] [ITERATIONS] [FILENAME]"
+   exit 1
+fi
+echo "Executable: $EXECUTABLE"
+echo "Iterations: $ITERATIONS"
+echo "Filename: $FILENAME"
+
+COUNTER=1
+while [ $COUNTER -le $ITERATIONS ]
+do
+   FILE1="${FILENAME}_A"
+   FILE2="${FILENAME}_B"
+   FILE3="${FILENAME}_OUTPUT"
+
+   if [ -f $FILE1 ] || [ -f $FILE2 ] || [ -f $FILE3 ]; then
+      read -p "Warning: Overwrite file [Y|N]: " RESPONSE
+      if [ $RESPONSE = "N" ]; then
+         exit 1
+      fi
+   fi
+
+   ./$1 $FILE1 $FILE2 > $FILE3
+   DIFF=$(diff $FILE1 $FILE2)
+   if [ "$DIFF" != "" ] 
+   then
+      echo "FAIL"
+      echo "--------------------"
+      cat $FILE3
+      echo "--------------------"
+      echo "Diff: $DIFF"
+      exit 1;
+   fi
+   rm $FILE1 $FILE2 $FILE3
+   ((COUNTER++))
+done
+echo "All iterations matched"
+exit 0
