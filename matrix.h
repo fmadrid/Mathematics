@@ -15,16 +15,6 @@ struct mat {
             x[i][j] = 0;
    }
 
-   // Replaces block [x0,x0+r) x [y0,y0+c) with the contents of M
-	template<int row, int col>
-		mat<m,n> replaceBlock(const mat<row,col> M, int x0, int y0) {
-			assert(x0 + row <- m && y0 + col <= n && x0 >= 0 && y0 >= 0);
-			for(int i = 0; i < row; i++)
-				for(int j = 0; j < col; j++)
-					x[x0+i][y0+j] = M.x[i][j];
-			return *this;
-		}
-
    vec<n> getRow(const int& row) const {
       vec<n> v;
       for(int i = 0; i < n; i++)
@@ -148,6 +138,65 @@ mat<m,m> inverse(const mat<m,m>& u) {
 }
 
 //////////////////////////////
+// Matrix-Scalar Operations
+//////////////////////////////
+
+// Component-wise Addition (Left)
+template<int m, int n>
+mat<m,n> operator+(const mat<m,n>& M, const double& c) { return c + M; }
+
+// Component-wise Addition (Right)
+template<int m, int n>
+mat<m,n> operator+(const double& c, const mat<m,n>& M) {
+   mat<m,n> N;
+   for(int row = 0; row < m; row++)
+      for(int col = 0; col < n; col++)
+         N.x[row][col] = M.x[row][col] + c;
+   return N;
+}
+
+// Component-wise Subtraction (Left)
+template<int m, int n>
+mat<m,n> operator-(const double& c, const mat<m,n>& M) {
+   mat<m,n> N;
+   for(int row = 0; row < m; row++)
+      for(int col = 0; col < n; col++)
+         N.x[row][col] = c - M.x[row][col];
+   return N;
+}
+
+// Component wise Subtraction (Right)
+template<int m, int n>
+mat<m,n> operator-(const mat<m,n>& M, const double&c) { return M + (-1) * c; }
+
+// Component-wise Multiplication (Left)
+template<int m, int n>
+mat<m,n> operator*(double c, const mat<m,n>& M) {
+   mat<m,n> N;
+   for(int row = 0; row < m; row++)
+      for(int col = 0; col < n; col++)
+         N.x[row][col] = c * M.x[row][col];
+   return N;
+}  
+
+// Component-wise Multiplication (Right)
+template<int m, int n>
+mat<m,n> operator*(const mat<m,n>& M, double c) { return c * M; }
+
+//////////////////////////////
+// Matrix-Vector Operations
+//////////////////////////////
+
+// Multiplication: [m,n] * [n] = [m]
+template<int m, int n>
+vec<m> operator*(const mat<m,n>& M, const vec<n>& u) {
+   vec<m> v;
+   for(int row = 0; row < m; row++)
+      v.x[row] = dot(M.getRow(row), u);
+   return v;
+}   
+
+//////////////////////////////
 // Matrix-Matrix Operations
 //////////////////////////////
 
@@ -185,6 +234,7 @@ mat<m,n> operator-=(mat<m,n>& M, const mat<m,n>& N) {
    return M;
 }
 
+// Not Unit-Tested
 template<int m, int n, int p>
 mat<m,p> operator*(const mat<m,n>& M, const mat<n,p> N) {
    mat<m,p> P={};
@@ -194,64 +244,5 @@ mat<m,p> operator*(const mat<m,n>& M, const mat<n,p> N) {
             P.x[row][col] += M.x[row][i] * N.x[i][col];
    return P;
 }
-
-//////////////////////////////
-// Matrix-Scalar Operations
-//////////////////////////////
-
-// Component-wise Addition (Right)
-template<int m, int n>
-mat<m,n> operator+(const double& c, const mat<m,n>& M) {
-   mat<m,n> N;
-   for(int row = 0; row < m; row++)
-      for(int col = 0; col < n; col++)
-         N.x[row][col] = M.x[row][col] + c;
-   return N;
-}
-
-// Component-wise Addition (Left)
-template<int m, int n>
-mat<m,n> operator+(const mat<m,n>& M, const double& c) { return c + M; }
-
-// Component wise Subtraction (Right)
-template<int m, int n>
-mat<m,n> operator-(const mat<m,n>& M, const double&c) { return M + (-1) * c; }
-
-// Component-wise Subtraction (Left)
-template<int m, int n>
-mat<m,n> operator-(const double& c, const mat<m,n>& M) {
-   mat<m,n> N;
-   for(int row = 0; row < m; row++)
-      for(int col = 0; col < n; col++)
-         N.x[row][col] = c - M.x[row][col];
-   return N;
-}
-
-// Component-wise Multiplication (Left)
-template<int m, int n>
-mat<m,n> operator*(double c, const mat<m,n>& M) {
-   mat<m,n> N;
-   for(int row = 0; row < m; row++)
-      for(int col = 0; col < n; col++)
-         N.x[row][col] = c * M.x[row][col];
-   return N;
-}  
-
-// Component-wise Multiplication (Right)
-template<int m, int n>
-mat<m,n> operator*(const mat<m,n>& M, double c) { return c * M; }
-
-//////////////////////////////
-// Matrix-Vector Operations
-//////////////////////////////
-
-// Multiplication: [m,n] * [n] = [m]
-template<int m, int n>
-vec<m> operator*(const mat<m,n>& M, const vec<n>& u) {
-   vec<m> v;
-   for(int row = 0; row < m; row++)
-      v.x[row] = dot(M.getRow(row), u);
-   return v;
-}   
 
 #endif
