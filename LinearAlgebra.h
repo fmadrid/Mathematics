@@ -1,5 +1,5 @@
-#include "matrix.h"
-#include "vector.h"
+#include "matrix.h"		// mat<n,n>, vec<n> getRow(int)
+#include "vector.h"		// vec<n>, vec<n>.dot(vec<n>),
 
 template<int n>
 vec<n> solveLinearSystem(const mat<n,n>& A, const vec<n>& b) {

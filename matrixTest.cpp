@@ -43,12 +43,15 @@ int main(int argc, char** argv) {
    srand(SEED);
    std::cout << "Seed: " << SEED << "\n";
 
-   double         c;         // Scalar value
-   mat<ROW,COL>   M, temp;   // Randomly generated matrix 
-   vec<COL>       v;         // Randomly generated vector
+   double         c;   			// Scalar value
+   mat<ROW,COL>   M,N,temp;	// Randomly generated matrix 
+   vec<COL>       v;   			// Randomly generated vector
    
-   mat<ROW, COL> L;   // Temporary actual results
-
+   mat<ROW, COL> L;   		// Temporary actual results
+	vec<ROW>      u = {}; 	// Temporary actual results
+	
+	string op;	// Operation name
+	
    /////////////////////////////
    // Randomly generate values
    /////////////////////////////
@@ -58,113 +61,117 @@ int main(int argc, char** argv) {
    for(auto& row : M.x)
       for(double& x : row)
          x = randDouble();
+		
+	for(auto& row : N.x)
+      for(double& x : row)
+         x = randDouble();
 
    for(double& x : v.x)
       x = randDouble();
 
+	temp = M;
+	op   = "";
+	
    std::cout << "c: " << c << "\n";
    std::cout << "M: " << M << "\n";
    std::cout << "v: " << v << "\n";
 
-   ///////////////////////////////
-   // Matrix - Scalar Operations
-   ///////////////////////////////
+   /////////////////
+   // Unit Testing
+   /////////////////
+	
+	// TO-DO: mat<n,m>::getRow, mat<n,m> setRow
+	// To-DO: Matrix: upperTriangular, getPivotRow, normalizeRow, swapRows, reduceRow, inverse
+	// TO-DO: Matrix-Matrix Multiplication
+	
+	L = M;
+   for(auto& row : L.x)
+      for(double& x : row) 
+         x += c;
+		
+	op = "Scalar-Matrix Addition (Component)"
+   aout << op << " " << L << "\n";
+	eout << op << " " << c + M << "\n";  // Left
+	
+	op = "Matrix-Scalar Addition (Component)"
+   aout << op << " " << L << "\n";
+   eout << op << " " << M + c << "\n";  // Right
+	
+	L = M;
+   for(auto& row : L.x)
+      for(double&x : row) 
+         x = c - x;
+		
+	op = "Scalar-Matrix Subtraction (Component)"
+   aout << op << " " << L << "\n";
+   eout << op << " " << c - M << "\n";  // Left
+	
+   L = M;
+   for(auto& row : L.x)
+      for(double& x : row) 
+         x -= c;
+		
+	op = "Matrix-Scalar Subtraction (Component)"
+   aout << op << " " << L << "\n";
+   eout << op << " " << M - c << "\n";  // Right
 
-   // Multiplication
    L = M;
    for(auto& row : L.x)
       for(double& x : row) 
          x *= c;
 
-   aout << L << "\n";
-   aout << L << "\n";
+	op = "Scalar-Matrix Multiplication (Component)"
+   aout << op << " " << L << "\n";
+	eout << op << " " << c*M << "\n";    // Left
+	
+	op = "Matrix-Scalar Multiplication (Component)"
+   aout << op << " " << L << "\n";
+   eout << op << " " << M*c << "\n";    // Right
 
-   eout << c*M << "\n";    // 1. Left
-   eout << M*c << "\n";    // 2. Right
-
-   // Addition
-   L = M;
-   for(auto& row : L.x)
-      for(double& x : row) 
-         x += c;
-
-   aout << L << "\n";
-   aout << L << "\n";
-
-   eout << c + M << "\n";  // 3. Left
-   eout << M + c << "\n";  // 4. Right
-
-   // Subtraction
-   L = M;
-   for(auto& row : L.x)
-      for(double& x : row) 
-         x -= c;
-
-   aout << L << "\n";
-   eout << M - c << "\n";  // Right
-
-   L = M;
-   for(auto& row : L.x)
-      for(double&x : row) 
-         x = c - x;
-
-   aout << L << "\n";
-   eout << c - M << "\n";  // Left
-
-   ///////////////////////////////
-   // Matrix - Vector Operations
-   ///////////////////////////////
-
-   // Multiplication
-   eout << M * v << "\n";  // Right
-
-   vec<ROW> u = {}; // Actual vector result
-
-   for(int i = 0; i < 3; i++) {
-      vec<COL> temp = M.getRow(i);
-      u.x[i] = temp.dot(v);
-   }
-
-   aout << u << "\n";
-
-   ///////////////////////////////
-   // Matrix - Matrix Operations
-   // ////////////////////////////
    
-   mat<ROW,COL> N;
-   for(auto& row : N.x)
-      for(double& x : row)
-         x = randDouble();
+	for(int i = 0; i < 3; i++) {
+		vec<COL> temp = M.getRow(i);
+		u.x[i] = temp.dot(v);
+	}
 
-   // Addition
+	op = "Matrix-Vector Multiplication"
+   eout << op << " " << M * v << "\n";
+   aout << op << " " << u << "\n";
+
    for(int i = 0; i < ROW; i++) {
       vec<COL> temp = M.getRow(i);
       temp += N.getRow(i);
       L.setRow(i,temp);
    }
-   aout << L << "\n";
-   aout << L << "\n";
-   aout << L << "\n";
-
-   eout << M + N << "\n";
-   eout << (M += N) << "\n";  // Compound Assignment
-   eout << M << "\n";         // Confirm assignment
-
-   // Subdtraction
-
-   // Addition
+	
+	op = "Matrix-Matrix Addition"
+   aout << op << " " << L << "\n";
+	eout << op << " " << M + N << "\n";
+	
+	op = "Matrix-Matrix Compound Addition"
+   aout << op << " " << L << "\n";
+	eout << op << " " << (M += N) << "\n";
+   
+	M = temp;
+	
    for(int i = 0; i < ROW; i++) {
       vec<COL> temp = M.getRow(i);
       temp -= N.getRow(i);
       L.setRow(i,temp);
    }
-   aout << L << "\n";
-   aout << L << "\n";
-   aout << L << "\n";
-
-   eout << M - N << "\n";
-   eout << (M -= N) << "\n";  // Compound Assignment
-   eout << M << "\n";         // Confirm Assignment
+	
+	op = "Matrix-Matrix Subtraction"
+   aout << op << " " << L << "\n";
+	eout << op << " " << M - N << "\n";
+	
+	op = "Matrix-Matrix Compound Subtraction"
+   aout << op << " " << L << "\n";
+	eout << op << " " << (M -= N) << "\n";
+	
+	M = temp;
+	
+	
+	
    return 0;
 
 }

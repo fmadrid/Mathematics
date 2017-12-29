@@ -16,16 +16,16 @@ struct mat {
    }
 
    // Replaces block [x0,x0+r) x [y0,y0+c) with the contents of M
-   template<int row, int col>
-      mat<m,n> replaceBlock(const mat<row,col> M, int x0, int y0) {
-         assert(x0 + row <- m && y0 + col <= n && x0 >= 0 && y0 >= 0);
-         for(int i = 0; i < row; i++)
-            for(int j = 0; j < col; j++)
-               x[x0+i][y0+j] = M.x[i][j];
-         return *this;
-      }
+	template<int row, int col>
+		mat<m,n> replaceBlock(const mat<row,col> M, int x0, int y0) {
+			assert(x0 + row <- m && y0 + col <= n && x0 >= 0 && y0 >= 0);
+			for(int i = 0; i < row; i++)
+				for(int j = 0; j < col; j++)
+					x[x0+i][y0+j] = M.x[i][j];
+			return *this;
+		}
 
-   vec<n> getRow(const int& row) {
+   vec<n> getRow(const int& row) const {
       vec<n> v;
       for(int i = 0; i < n; i++)
          v.x[i] = x[row][i];
@@ -35,7 +35,6 @@ struct mat {
    void setRow(const int& row, const vec<n>& v) {
       for(int col = 0; col < n; col++)
          x[row][col] = v.x[col];
-
       return;
    }
 
@@ -44,6 +43,22 @@ struct mat {
 //////////////////////////////
 // Matrix Operations
 //////////////////////////////
+
+// Not unit tested
+template<int n>
+mat<n,n> upperTriangular(const mat<n,n>& M) {
+   mat<n,n> U = M;
+
+   for(int i = 0; i < n; i++) {
+      int row = getPivotRow(U,i);
+      if(row != i) swapRows(U,i,row);
+
+      for(int j = 0; j < n; j++)
+         if(i != j)
+            reduceRow(U, row, j, U.x[row][i]);
+   }
+   return U;
+}
 
 template<int m, int n>
 std::ostream& operator<<(std::ostream& out, const mat<m,n>& M) {
@@ -59,7 +74,8 @@ std::ostream& operator<<(std::ostream& out, const mat<m,n>& M) {
 
    return out;
 }
-// Finds the first r containing a non-zero element in the specified cumn. Returns -1 otherwise
+
+// Finds the first row containing a non-zero element in the specified column. Returns -1 otherwise
 template<int m, int n>
 int getPivotRow(const mat<m,n>& u, const int c) {
    for(int row = c; row < m; row++)
@@ -74,13 +90,10 @@ void normalizeRow(mat<m,n>& u, int row, double val) {
 }
 
 template<int m, int n>
-void swapRows(mat<m,n>& u, int row1, int row2) {
-   vec<n> temp;
-   for(int col = 0; col < m; col++){
-      temp.x[col] = u.x[row1][col];
-      u.x[row1][col] = u.x[row2][col];
-      u.x[row2][col] = temp.x[col];
-   }
+void swapRows(mat<m,n>& M, int row1, int row2) {
+   vec<m> temp = M.getRow(row1);
+   M.setRow(row1, M.getRow(row2));
+   M.setRow(row2, temp);
 }
 
 template<int m, int n>
@@ -105,7 +118,7 @@ mat<m,m> inverse(const mat<m,m>& u) {
       for(int col = m; col < 2*m; col++)
          w.x[row][col] = ((row == col - m) ? 1: 0);
 
-   // For each r in w
+   // For each row in w
    for(int row = 0; row < m; row++) {
 
       int pivotRow = getPivotRow(w, row);
@@ -140,70 +153,46 @@ mat<m,m> inverse(const mat<m,m>& u) {
 
 template<int m, int n>
 mat<m,n> operator+(const mat<m,n>& M, const mat<m,n>& N) {
-
    mat<m,n> R;
-
    for(int row = 0; row < m; row++)
       for(int col = 0; col < n; col++)
          R.x[row][col] = M.x[row][col] + N.x[row][col];
-
    return R;
-
 }
 
 template<int m, int n>
 mat<m,n> operator+=(mat<m,n>& lhs, const mat<m,n>& rhs) {
-
    for(int row = 0; row < m; row++)
       for(int col = 0; col < n; col++)
          lhs.x[row][col] += rhs.x[row][col];
-
    return lhs;
-
 }
-
 
 template<int m, int n>
 mat<m,n> operator-(const mat<m,n>& M, const mat<m,n>& N) { 
-
-
    mat<m,n> R;
-
    for(int row = 0; row < m; row++)
       for(int col = 0; col < n; col++)
          R.x[row][col] = M.x[row][col] - N.x[row][col];
-
    return R;
-
 }
 
 template<int m, int n>
 mat<m,n> operator-=(mat<m,n>& M, const mat<m,n>& N) {
-
    for(int row = 0; row < m; row++)
       for(int col = 0; col < n; col++)
          M.x[row][col] -= N.x[row][col];
-
    return M;
-
 }
 
 template<int m, int n, int p>
 mat<m,p> operator*(const mat<m,n>& M, const mat<n,p> N) {
-
-   mat<m,p> P;
-
-   for(int row = 0; row < m; row++)
-      for(int col = 0; col < p; col++)
-         P.x[row][col] = 0;
-
+   mat<m,p> P={};
    for(int row = 0; row < m; row++)
       for(int col = 0; col < p; col++)
          for(int i = 0; i < n; i++)
             P.x[row][col] += M.x[row][i] * N.x[i][col];
-
    return P;
-
 }
 
 //////////////////////////////
@@ -213,15 +202,11 @@ mat<m,p> operator*(const mat<m,n>& M, const mat<n,p> N) {
 // Component-wise Addition (Right)
 template<int m, int n>
 mat<m,n> operator+(const double& c, const mat<m,n>& M) {
-
    mat<m,n> N;
-
    for(int row = 0; row < m; row++)
       for(int col = 0; col < n; col++)
          N.x[row][col] = M.x[row][col] + c;
-
    return N;
-
 }
 
 // Component-wise Addition (Left)
@@ -235,31 +220,24 @@ mat<m,n> operator-(const mat<m,n>& M, const double&c) { return M + (-1) * c; }
 // Component-wise Subtraction (Left)
 template<int m, int n>
 mat<m,n> operator-(const double& c, const mat<m,n>& M) {
-
    mat<m,n> N;
-
    for(int row = 0; row < m; row++)
       for(int col = 0; col < n; col++)
          N.x[row][col] = c - M.x[row][col];
-
    return N;
-
 }
 
-// Component-wise Multiplicaiton
+// Component-wise Multiplication (Left)
 template<int m, int n>
 mat<m,n> operator*(double c, const mat<m,n>& M) {
-
    mat<m,n> N;
-
    for(int row = 0; row < m; row++)
       for(int col = 0; col < n; col++)
          N.x[row][col] = c * M.x[row][col];
-
    return N;
-
 }  
 
+// Component-wise Multiplication (Right)
 template<int m, int n>
 mat<m,n> operator*(const mat<m,n>& M, double c) { return c * M; }
 
@@ -270,15 +248,10 @@ mat<m,n> operator*(const mat<m,n>& M, double c) { return c * M; }
 // Multiplication: [m,n] * [n] = [m]
 template<int m, int n>
 vec<m> operator*(const mat<m,n>& M, const vec<n>& u) {
-
-   vec<m> v = {};
-
+   vec<m> v;
    for(int row = 0; row < m; row++)
-      for(int col = 0; col < n; col++)
-         v.x[row] += M.x[row][col] * u.x[col];
-
+      v.x[row] = dot(M.getRow(row), u);
    return v;
-
 }   
 
 #endif

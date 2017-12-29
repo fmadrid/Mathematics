@@ -19,8 +19,8 @@ struct vec {
          sum += u.x[i] * v.x[i];
       return sum;
    }
-};
 
+};
 
 //////////////////////////////
 // Vector Operations
@@ -37,67 +37,24 @@ std::ostream& operator << (std::ostream &out, const vec<n>& u) {
    return out;
 
 }
+
 template<int n>
 double magnitude(const vec<n>& v) { return std::sqrt(dot(v,v));}
 
 template<int n>
 double magnitude_squared(const vec<n>& v) { return dot(v,v); }
 
-//////////////////////////////
-// Vector-Vector Operations
-//////////////////////////////
-
 template<int n>
-vec<n> operator+(const vec<n>& u, const vec<n>& v) {
-   vec<n> w;
-   for(int i = 0; i < n; i++)
-      w.x[i] = u.x[i] + v.x[i];
-   return w;
+double maxDistance(const vec<n>& u) {
+   double max = std::abs(u.x[1]);
+   for(int i = 2; i < n; i++)
+      max = (max < std::abs(u.x[i])) ? std::abs(u.x[i]) : max;
+   return max;
 }
 
-template<int n>
-vec<n>& operator+=(vec<n>& lhs, const vec<n>& rhs) {
-   for(int i = 0; i < n; i++)
-      lhs.x[i] += rhs.x[i];
-   return lhs;
-}
-
-// Subtraction
-template<int n>
-vec<n> operator-(const vec<n>& u, const vec<n>& v) {
-   vec<n> w;
-   for(int i = 0; i < n; i++)
-      w.x[i] = u.x[i] - v.x[i];
-   return w;
-}
-
-// Component-wise Multiplication
-template<int n>
-vec<n> operator*(const vec<n>& u, const vec<n>& v) {
-   vec<n> w;
-   for(int i = 0; i < n; i++)
-      w.x[i] = u.x[i] * v.x[i];
-   return w;
-}
-
-template<int n>
-vec<n> operator-=(vec<n>& lhs, const vec<n>& rhs) {
-   for(int i = 0; i < n; i++)
-      lhs.x[i] -= rhs.x[i];
-   return lhs;
-}
-
-template<int n>
-double dot(const vec<n>& u, const vec<n>&v) {
-   double sum = 0.0;
-   for(int i = 0; i < n; i++)
-      sum += u.x[i] * v.x[i];
-   return sum;
-}
-
-//////////////////////////////////////////////////
-// Constant-Vector / Vector-Constant Operations
-//////////////////////////////////////////////////
+///////////////////////////////
+// Scalar-Vector Operations
+///////////////////////////////
 
 // Component Addition
 template<int n>
@@ -137,13 +94,59 @@ vec<n> operator*(double c, const vec<n>& u) {
 template<int n>
 vec<n> operator*(const vec<n>& u, double c) { return c * u; }
 
+//////////////////////////////
+// Vector-Vector Operations
+//////////////////////////////
+
 template<int n>
-double maxDistance(const vec<n>& u) {
-   double max = std::abs(u.x[1]);
-   for(int i = 2; i < n; i++)
-      max = (max < std::abs(u.x[i])) ? std::abs(u.x[i]) : max;
-   return max;
+vec<n> operator+(const vec<n>& u, const vec<n>& v) {
+   vec<n> w;
+   for(int i = 0; i < n; i++)
+      w.x[i] = u.x[i] + v.x[i];
+   return w;
 }
+
+template<int n>
+vec<n>& operator+=(vec<n>& lhs, const vec<n>& rhs) {
+   for(int i = 0; i < n; i++)
+      lhs.x[i] += rhs.x[i];
+   return lhs;
+}
+
+// Subtraction
+template<int n>
+vec<n> operator-(const vec<n>& u, const vec<n>& v) {
+   vec<n> w;
+   for(int i = 0; i < n; i++)
+      w.x[i] = u.x[i] - v.x[i];
+   return w;
+}
+
+template<int n>
+vec<n> operator-=(vec<n>& lhs, const vec<n>& rhs) {
+   for(int i = 0; i < n; i++)
+      lhs.x[i] -= rhs.x[i];
+   return lhs;
+}
+
+// Component-wise Multiplication
+template<int n>
+vec<n> operator*(const vec<n>& u, const vec<n>& v) {
+   vec<n> w;
+   for(int i = 0; i < n; i++)
+      w.x[i] = u.x[i] * v.x[i];
+   return w;
+}
+
+template<int n>
+double dot(const vec<n>& u, const vec<n>&v) {
+   double sum = 0.0;
+   for(int i = 0; i < n; i++)
+      sum += u.x[i] * v.x[i];
+   return sum;
+}
+
+
 
 #endif
 
