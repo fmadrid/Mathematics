@@ -1,0 +1,65 @@
+\documentclass[../main.tex]{subfiles}
+\begin{document}
+
+The Conjugate Gradient Method is an algorithm for finding a numerical solution of a system of linear equations of the form
+\begin{equation}
+Ax=b
+\end{equation}
+where $A$ is a symmetric, positive-definite matrix.
+
+\subsection{Quadratic Form}
+\color{red} Finding conflicting definitions for a \textit{quadratic form} when considering whether the function is homogeneous or not.\color{black}
+
+\begin{definition}
+A \textit{quadratic form} is a scalar quadratic function of a vector with the form
+\begin{equation}\label{eq:QuadraticForm}
+f(x) = x^TAx-b^Tx+c
+\end{equation}
+where $A$ is a matrix, $x$ and $b$ are vectors, and $c$ is a scalar constant.
+\end{definition}
+
+\subsubsection{Derivative of a Quadratic Form}\label{section:DerivativeQuadraticForm}
+Let $f(x) = x^TAx$ over the real numbers. Let $y(x) = Ax$ so that $f(x,y(x)) =  x^Ty(x)$, then
+\begin{align*}
+f'(x,y(x)) 	&= \frac{\partial f}{\partial x} + \frac{\partial f}{\partial y} \cdot y'(x)\\
+			&= y(x)^T + x^T\cdot A\\
+            &= (Ax)^T + x^TA\\
+            &= x^TA^T + x^TA
+\end{align*}
+
+Let $g(x) = \frac{1}{2}f(x)$ from (\ref{eq:QuadraticForm}) then
+\begin{equation}\label{eq:DirevativeQuadraticForm}
+g'(x) = x^TA^T-b^T
+\end{equation}
+Suppose $g'(x) = 0$ and $A$ is symmetric, then solving the linear system $Ax=b$ is equivalent to finding the minimum/maximum of the quadratic form $g(x)$. If $A$ is positive-definite, then this will be a minimum.
+\begin{claim}
+Let $A$ be a symmetric, positive-definite matrix, then $x$ is a solution for $Ax=b$ if and only if $g(x) = \frac{1}{2}x^TAx-b^Tx+c$ is minimized at $x$.
+\end{claim}
+
+\begin{proof}
+\ldots
+\end{proof}
+
+\subsection{Method of Steepest Descent}
+Very intuitive. $\nabla f(x)$ points in the direction of steepest ascent at $(x,f(x))$. By equation (\ref{eq:DirevativeQuadraticForm}), the steepest descent is then
+\begin{equation}
+-f'(x) = b - Ax.
+\end{equation}
+What size of step $\alpha$ should we take in direction $-f'(x)$? Clearly the $\alpha$ which minimizes $f$ along the line,
+\begin{equation}
+x_{(i+1)} = x_{(i)}+\alpha r_{(i)}
+\end{equation}
+where $r_{(i)} = -f'(x_i)$ or \color{red} the error transformed by A into the same space as $b$\color{black}. $\alpha$ minimizes $f$ when $\frac{d}{d\alpha}(f(x_{i})) = 0$
+\begin{equation*}
+\frac{d}{d\alpha}f(x_{(i)}) = r_{(i)} \cdot f'(x_{(i+1)})^T=0 
+\end{equation*}
+when $r_{(i)}$ and $f'(x_{(i+1)})$ are orthogonal. Solving for $\alpha$,
+\begin{align}
+r_{(i)} \cdot f'(x_{(i+1)})^T &= 0 \nonumber\\
+r_{(i)} \cdot (b-Ax_{(i+1)})^T &= 0 \nonumber\\
+r_{(i)} \cdot (b-A(x_{(i)}+\alpha r_{i}))^T &= 0 \nonumber\\
+&\ldots\nonumber\\
+\alpha &= \frac{r^T_{(i)}r_{(0)}}{r^T_{(i)}Ar_{(0)}}
+\end{align}
+
+\end{document}
