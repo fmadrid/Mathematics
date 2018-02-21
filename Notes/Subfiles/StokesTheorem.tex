@@ -1,0 +1,17 @@
+\documentclass[../main.tex]{subfiles}
+\begin{document}
+Stoke's Theorem is a higher-dimensional version of Green's Theorem and relates a surface integral over a surface S to a line integral around the boundary curve of S.
+
+\begin{theorem}[Stoke's Theorem]
+Let $S$ be an oriented piecewise-smooth surface that is bounded by a simple closed, piecewise-smooth boundary curve $C$ with positive orientation. LET $\textbf{F}$ be a vector field whose components have continuous partial derivatives on an open region in $\mathbb{R}^3$ that contains $S$, then
+\begin{equation*}
+\int_C{\textbf{F}\cdot d\textbf{r}} = \iint_S{\text{curl} \textbf{F}\cdot d\textbf{S}}
+\end{equation*}
+\end{theorem}
+Since
+\begin{equation*}
+\int_C{\textbf{F}\cdot d\textbf{r} = \int_C{\textbf{F}\cdot \textbf{T}\,ds}}\qquad\text{and}\qquad\iint_S{\text{curl} \textbf{F}\cdot d\textbf{S}} = \iint_S{\text{curl} \textbf{F}\cdot \textbf{n}\,d\textbf{S}}
+\end{equation*}
+\color{red}Difficult to visualize\color{black}
+which says that the line integral around the boundary curve of $S$ of the tangential component of $\textbf{F}$ is equal to the surface integral of the normal component of the curl of $\textbf{F}$
+\end{document}

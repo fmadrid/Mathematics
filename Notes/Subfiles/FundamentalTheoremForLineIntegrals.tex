@@ -1,0 +1,68 @@
+\documentclass[../main.tex]{subfiles}
+
+\begin{document}
+Recall the Fundamental Theorem of Calculus
+\begin{equation*}
+\int_a^b{F'(x) dx} = F(b) - F(a)
+\end{equation*}
+where $F'(x)$ is continuous on $[a,b]$. Considering $\nabla f$ of a function $f$ of two or three variables as a sort of derivative of $f$, then FTC can be extending to line integrals.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Theorem: FTC Line Integral
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{theorem}
+Let $C$ be a smooth curve given by the vector function $\textbf{r}(t), a\le t \le b$. Let $f$ be a differentiable function of two or three variables whose gradient vector $\nabla f$ is continuous on $C$. Then
+\begin{equation*}
+\int_C{\nabla f \cdot d\textbf{r}}=f(\textbf{r}(b)) - f(\textbf{r}(a))
+\end{equation*}
+\end{theorem}
+The line integral of a conservative vector field can be evaluated by simply knowing the value of $f$ at the endpoints of $C$.
+\begin{proof}
+\begin{align*}
+\int_C{\nabla f\cdot dr} &= \int_a^b{\nabla f(\textbf{r}(t))\cdot \textbf{r}'(t)} \\
+	&= \int_a^b{(\frac{\partial f}{\partial x}\frac{dx}{dt} + \frac{\partial f}{\partial y}\frac{dy}{dt} +\frac{\partial f}{\partial z}\frac{dz}{dt}) dt}\\
+	&=\int_a^b{\frac{d}{dt}f(\textbf{r}(t))dt}\\
+	&= f(\textbf{r}(b)) - f(\textbf{r}(a))
+\end{align*}
+\end{proof}
+
+\subsection{Independence of Path}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Theorem: ConservativeLineIntegral
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{theorem}
+$\int_C{\textbf{F}\cdot d\textbf{r}}$ is independent of path in $D$ if and only if $\int_C{\textbf{F}\cdot d\textbf{r}}=0$ for every closed path $C$ in $D$
+\end{theorem}
+Clearly it follows that $\int_C{\textbf{F}\cdot\,d\textbf{r}}=0$ for any closed path.
+\begin{proof}
+...
+\end{proof}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Theorem: IndependentPath -> Conservative
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{theorem}[Independent Path $\rightarrow$ Conservative]
+Let $\textbf{F}$ be a continuous vector field on an open connected region $D$. If $\int_C{\textbf{F}\cdot\,d\textbf{r}}$ is independent of path in $D$, then $\textbf{F}$ is a conservative vector field on $D$; that is, there exists a function $f$ such that $\nabla f = \textbf{F}$.
+\end{theorem}
+\begin{proof}
+...
+\end{proof}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Definition: Simple Curve
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{definition}
+A \textit{simple curve} is a curve that does not intersect itself any where between its endpoints.
+\end{definition}
+
+\begin{theorem}[Conservative $\rightarrow$ Equal Partials]
+If $\textbf{F}(x,y)=P(x,y)\,\textbf{i}+Q(x,y)\,\textbf{j}$ is a conservative vector field, where $P$ and $Q$ have continuous first-order partial derivatives on a domain $D$, then throughout $D$ we have
+\begin{equation*}
+\frac{\partial P}{\partial y} = \frac{\partial Q}{\partial x}
+\end{equation*}
+\end{theorem}
+Converse is true if $D$ is a simply-connected region (i.e. simple closed curve with no holes).
+\begin{proof}
+...
+\end{proof}
+\end{document}

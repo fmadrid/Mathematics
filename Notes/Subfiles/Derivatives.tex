@@ -1,0 +1,26 @@
+\documentclass[../main.tex]{subfiles}
+\begin{document}
+
+Consider the problem
+\begin{equation}
+f(u,v,p,n) = (v-p n)+2\frac{||v-(v-p n)||}{||u-(v-p n)||}\cdot(u-(v-p n))
+\end{equation}
+and the following substitutions
+\begin{align*}
+a = v-pn \qquad b = v - a \qquad c = u - a \qquad d = b/c \\ 
+e = ||d||=\sqrt{d^Td}=\sqrt{f} \qquad f = d^Td=d\cdot d \qquad z = a + 2ce 
+\end{align*}
+Since
+\begin{align*}
+a' = v' - (p'n + pn') \qquad b' = v' - a' \qquad c' = u' - a' \qquad d' = \frac{b'c-bc'}{c^2} \\
+e' = \frac{f'}{2e} \qquad f' = 2d'd \qquad z' = a' + 2(c'e+ce')
+\end{align*}
+we have
+\begin{align*}
+f'(u,v,p,n) &= a' + 2(c'e+ce') \\
+			&= a' + 2\Bigg((u' - a')e+c\Big(\frac{f'}{2e}\Big)\Bigg) \\
+			&= a' + 2\Bigg((u' - a')e+c\Big(\frac{2d'd}{2e}\Big)\Bigg) \\
+			&= a' + 2\Bigg((u' - a')e+c\Big(\frac{2(\frac{b'c-bc'}{c^2})d}{2e}\Big)\Bigg) \\
+			&= a' + 2\Bigg((u' - a')e+c\Big(\frac{2\big(\frac{(v' - a')c-b(u' - a')}{c^2}\big)d}{2e}\Big)\Bigg) \\
+\end{align*}
+\end{document}

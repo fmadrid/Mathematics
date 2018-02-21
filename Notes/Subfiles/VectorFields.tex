@@ -1,0 +1,26 @@
+\documentclass[../main.tex]{subfiles}
+
+\begin{document}
+In general, a vector field is a function whose domain is a set of points in $\mathbb{R}^2$ or $\mathbb{R}^3$ and whose range is a set of vectors in $V_2$ or $V_3$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Definition: Vector Field
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{definition}\label{def: VectorField}
+Let $D$ be a set in $\mathbb{R}^2$. A \textbf{vector field} on $\mathbb{R}^2$ is a function $\textbf{F}$ that assigns to each point $(x,y)$ in $D$ a two-dimensional vector $\textbf{F}(x,y)$.
+\end{definition}
+
+\vspace{1em}
+Since $\textbf{F}(x,y)$ is a two-dimensional vector, we can write it in terms of its \textbf{component functions} $P$ and $Q$ as follows:
+\begin{equation*}
+	\textbf{F}(x,y) = P(x,y)\ \textbf{i} + Q(x,y)\ \textbf{j}
+\end{equation*}
+$P$ and $Q$ are scalar functions and sometimes called \textbf{scalar fields} to distinguish them from vector fields.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Definition: Conservative Vector Field
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{definition}\label{def:ConservativeVectorField}
+A vector field $\textbf{F}$ is called a \textbf{conservative vector field} if it is the gradient of some scalar function, that is, if $\textbf{F} = \nabla f$. $f$ is called a \textbf{potential function} for $\textbf{F}$.
+\end{definition}
+\end{document}

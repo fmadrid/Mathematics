@@ -1,0 +1,93 @@
+\documentclass[../main.tex]{subfiles}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Definition: Positive-Definite
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{definition}[Positive-Definite]\label{def:PositiveDefinite}
+A matrix $A$ is \textit{positive-definite} if for every nonzero vector $x$,
+\begin{equation}
+x^TAx>0
+\end{equation}
+\end{definition}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Claim: Positive-Definite -> Positive eigenvalues
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{claim}[Positive-Definite $\rightarrow \lambda_i >0$]\label{th:positiveEigen}
+If $A$ is a positive-definite matrix, then the eigenvalues of $A$ are positive.
+\end{claim}
+
+\begin{proof}
+Let $A$ be a positive-definite matrix. Since $A$ is positive-definite
+\begin{equation*}
+x^TAx = x^T\lambda x =\lambda x^Tx > 0
+\end{equation*}
+but $x^Tx = \sum{x_i^2}$ which is greater than $0$, thus $\lambda$ is also greater than zero.
+\end{proof}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Definition: Diagnolizable
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{definition}[Diagonalizable]
+A matrix $A$ is diagonalizable if there exists an invertible matrix $P$ such that $PAP^{-1}$ is a diagonal matrix.
+\end{definition}
+
+For all matrices $A$, it is not guaranteed a diagonlization exists. If a diagonalization exists, then $P^{-1}AP = D$ where $D$ is some diagonal matrix so $AP = PD \rightarrow A _i\vec{\alpha}_i = \vec{\alpha}_i d_i = d_i \vec{\alpha}_i$ for $P = (\vec{\alpha}_1\ \ldots\ \vec{\alpha}_n)$ so $D$ is merely the lambda values of $A$. \color{red} This implies we must have $n$ eigenvalues but do they necessarily need to be distinct?\color{black}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Claim: Diagonalizable and Non-zero eigenvalues implies Invertible
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{claim} If $A$ is diagonlizable and has only non-zero eigenvalues, then $A$ is invertible.
+\end{claim}
+\begin{proof}
+Since $D$ exists and consists of the eigenvalues of $A$ which are non-zero, $D^{-1}$ exists (and is easily calculable) and we have $D^{-1} = (P^{-1}AP)^{-1} = PA^{-1}P^{-1} \rightarrow A^{-1} = P^{-1}D^{-1}P$; therefore, $A^{-1}$ also exists.
+\end{proof}
+
+\begin{definition}
+A square matrix U is unitary if $U^{-1} = U^T$.
+\end{definition}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Theorem: Invertible Matrix Theorem
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{theorem}[Invertible Matrix Theorem]
+$A$ is invertible if and only if any of the following hold:
+\begin{itemize}
+	\item $A$ is row-equivalent to the $n \times n$ identity matrix
+	\item $A$ has $n$ pivot positions
+	\item The equation $A\textbf{x}=0$ has only the trival solution $\textbf{x} = 0$.
+	\item The columns of $A$ form a linearly independent set
+	\item The linear transformation $x\mapsto Ax$ is one-to-one
+	\item For each column vector $b\in \mathbb{R}^n$, the equation $A\textbf{x}=b$ has a unique solution.
+	\item The columns of $A$ span $\mathbb{R}^n$
+	\item The linear transformation $x\mapsto Ax$ is a surjection (onto)
+	\item There is an $n \times n$ matrix $C$ such that $CA = I_n$ or $AC = I_n$ (\textbf{Note:} $C$ can be found by multiplying the elementary operation matrices)
+	\item \color{red}The transpose matrix $A^T$ is invertible
+	\item The columns of $A$ form a basis for $\mathbb{R}^n$
+	\item The column space of $A$ is equal to $\mathbb{R}^n$
+	\item \color{red}The rank of $A$ is $n$\color{black}
+	\item The null space of $A$ is $\{0\}$
+	\item The dimension of the null space of $A$ is 0.
+	\item $0$ fails to be an eigenvalue of $A$ (Seen in the claim above)
+	\item The determinant of $A$ is non-zero \color{red} This is an if and only if?\color{black}
+	\item \color{red}The orthogonal complement of the column space of $A$ is $\{0\}$\color{black}
+	\item \color{red} The orthogonal complement of the null space of $A$ is $\mathbb{R}^n$\color{black}
+	\item The row space of $A$ is $\mathbb{R}^n$
+	\item The matrix $A$ has $n$ non-zero singular values
+\end{itemize}
+\end{theorem}
+
+\subsection{Finding Eigenvalues}
+Eigenvalues are the solutions to the equation
+\begin{equation*}
+Av=\lambda v
+\end{equation*}
+for $v \ne 0$ or alternatively
+\begin{equation*}
+(A-\lambda I)v = 0
+\end{equation*}
+Since $\text{det}(AB) = \text{det}(A)\cdot\text{det}(B)$ and $v \ne 0$, $\text{det}((A-\lambda I)v) = 0 \leftrightarrow \text{det}(A-\lambda I) = 0$
+
+\end{document}
