@@ -26,6 +26,8 @@ struct vec {
 // Vector Operations
 //////////////////////////////
 
+
+
 template<int n>
 std::ostream& operator << (std::ostream &out, const vec<n>& u) {
    out << "[";
@@ -93,6 +95,10 @@ vec<n> operator*(double c, const vec<n>& u) {
 // Multiplication (Right)
 template<int n>
 vec<n> operator*(const vec<n>& u, double c) { return c * u; }
+
+// Division
+template<int n>
+vec<n> operator/(const vec<n>& u, double c) { return u * (1 / c); }
 
 //////////////////////////////
 // Vector-Vector Operations

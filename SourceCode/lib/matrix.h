@@ -31,6 +31,13 @@ struct mat {
          v.x[i] = x[row][i];
       return v;
    }
+   
+   vec<m> getColumn(const int& column) const {
+       vec<m> v;
+       for(int i = 0; i < m; i++)
+           v.x[i] = x[i][column];
+       return v;
+   }
 
    void setRow(const int& row, const vec<n>& v) {
       for(int col = 0; col < n; col++)
@@ -43,6 +50,27 @@ struct mat {
 //////////////////////////////
 // Matrix Operations
 //////////////////////////////
+
+template<class T>
+void swap(T& a, T&b) {
+    
+    T temp = a;
+    a = b;
+    b = temp;
+}
+
+// Not unit tested
+template<int m, int n>
+mat<n,m> transpose(mat<m,n> M) {
+    
+    mat<n,m> N;
+    for(int i = 0; i < m; i++)
+        for(int j = 0; j < n; j++)
+            N.x[j][i] = M.x[i][j];
+        
+    return N;
+    
+}
 
 // Not unit tested
 template<int n>
@@ -254,4 +282,42 @@ vec<m> operator*(const mat<m,n>& M, const vec<n>& u) {
    return v;
 }   
 
+// Multiplication: [m,n] * [n] = [m]
+template<int m, int n>
+vec<n> operator*(const vec<m>& u, const mat<m,n>& M) {
+   vec<n> v;
+   for(int col = 0; col < m; col++)
+      v.x[col] = dot(M.getColumn(col), u);
+   return v;
+}  
+
+// Not unit tested
+// Addition: Add vector u into each column in M
+template<int m, int n>
+mat<m,n> operator+(mat<m,n> M, const vec<n>& u) {
+       
+   for(int row = 0; row < m; row++)
+       for(int col = 0; col < n; col++)
+           M.x[row][col] += u.x[row];
+   return M;
+}   
+
+template<int m, int n>
+mat<m,n> operator+(const vec<n>& u, mat<m,n> M) { return M + u; }
+
+
+// Not unit tested
+// Division: Add vector u into each column in M
+template<int m, int n>
+mat<m,n> operator/(const vec<m>& u, const mat<m,n> M) {
+   return u * inverse(M);
+}   
+
+template<int n>
+mat<1,n> transpose(const vec<n>& u) {
+    mat<1,n> M;
+    for(int i = 0; i < n; i++)
+        M.x[0][i] = u.x[i];
+    return M;
+}
 #endif
