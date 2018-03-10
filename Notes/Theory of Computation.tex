@@ -1,0 +1,39 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{color}			% \color
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+\usepackage{upgreek}		% \upvarphi
+\usepackage{graphicx}		% \includegraphics
+\usepackage{float}			% Figure Placement
+
+\usepackage{subfiles}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{claim}{Claim}
+
+\begin{document}
+\title{Theory of Computation Notes}
+\author{Frank Madrid}
+\maketitle
+\tableofcontents
+
+\section{Reducibility}
+A \textbf{reduction} is a way of converting one problem to another problem in such a way that a solution to the second problem can be used to solve the first problem. Given two problems $A$ and $B$, if $A$ reduces to $B$, we can use a solution to $B$ to solve $A$.
+
+\subsection{Mapping Reducibility}
+\begin{definition}
+	Lanague $A$ is \textbf{mapping reducible} to language$B$, written $A\le_m B$, if there is a computable function $f:\Sigma^* \rightarrow \Sigma^*$, where for every $w$,\begin{equation*}
+	w\in A \leftrightarrow f(w) \in B.
+	\end{equation*}
+	The function $f$ is called the \textbf{reduction} from $A$ to $B$.
+\end{definition}
+\end{document}

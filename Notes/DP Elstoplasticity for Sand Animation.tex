@@ -1,0 +1,119 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{color}			% \color
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{bm}
+\usepackage{upgreek}		% \upvarphi
+\usepackage{graphicx}		% \includegraphics
+\usepackage{float}			% Figure Placement
+
+\usepackage{subfiles}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{claim}{Claim}
+
+\newenvironment{redtext}{\color{red}}{\ignorespacesafterend}
+
+\begin{document}
+\title{DP Elastoplasticity for Sand Animation - Reading Notes}
+\author{Frank Madrid}
+\maketitle
+
+\section{Introduction}
+\subsection{Paper Contributions}
+\begin{itemize}
+	\item Builds on the work of \ref{Mast2013} and develops an implicit version of their Drucker-Prager-based elastoplasticity model for granular materials.
+	\item Uses the Material Point Method (MPM) to discretize the model since it provides a natural and efficient way of treating contact, topological change and history dependent behavior.
+	\item Replace  the particle/grid transfers used by Mast with APIC transfers \ref{Jiang 2015} which allows for more stable behavior with simulations that have higher numbers of particles per cell.
+\end{itemize}
+
+\section{Background}
+
+\begin{definition}
+	Let the density and velocity of our object be described at each location by $\rho(x,y,r)$ and $\textbf{v}(x,y,z)$. The \textbf{conservation of mass} is
+	\begin{equation*}
+		\frac{D\rho}{Dt} + \rho\nabla \cdot \textbf{v}=0
+	\end{equation*}
+	and the \textbf{conservation of momentum} is
+	\begin{equation*}
+		\rho \frac{D\textbf{v}}{Dt} = \nabla \cdot \boldsymbol{\sigma} + \rho \textbf{g}
+	\end{equation*}
+	where $\boldsymbol{\sigma}$ is the internal stress and $\textbf{g}$ gravity.
+\end{definition}
+The law of conservation of mass indicates the rate of change of the density of an object with respect to time is equal net flow of $\textbf{v}$
+\begin{definition}
+	An \textbf{Euler-Lagrange} equation is a second-order partial differential equation whose solutions are the functions for which a given functional is stationary.
+\end{definition}
+
+\begin{definition}
+	The \textbf{deformation gradient} represents how deformed a material is locally. The deformation gradient $\mathbf{F}$ evolves according to
+	\begin{equation*}
+	\frac{D\textbf{F}}{dt} = (\nabla \textbf{v})\textbf{F}.
+	\end{equation*}
+\end{definition}
+
+\subsection{Conservation of Mass}
+\textbf{Alternate Forms}
+\begin{equation*}
+	\frac{D\rho}{Dt} + \nabla \cdot (\rho\textbf{v})=0
+\end{equation*}
+\noindent\textbf{Interpretation}
+For a given closed surface in the system, the change in time of the mass enclosed by the surface is equal to the mass that traverses the surface, positive if matter goes in and negative if matter goes out.
+
+\subsection{Weights}
+During the information transformation process between particle and grid representations, each particle $p$ and grid node $i$ is associated with a weight $w_{ip}^n$ at time index $n$ which determines how strongly the particle and node interact.
+
+Weights are computed based on a kernel $w_{ip} = N({\textbf{x}_p}^n - {\textbf{x}_i}^n)$, where ${\textbf{x}_p}^n$ and ${\textbf{x}_i}^n$ are the locations of the particle and grid node locations.
+
+\subsection{Kernel}
+Choosing a kernel $N$ leads to trade offs with respect to smoothness, computational efficiency, and the width of the stencil.
+
+Tensor product splines are preferred for their computational efficiency.
+\subsection{Elastic and Plastic Deformation Gradient}
+Plasticity is represented by factoring the deformation gradient into its \textit{elastic} and \textit{plastic} parts $\textbf{F} = \textbf{F}^E\textbf{F}^P$. Consider a force which coils a metal rod. The \textbf{plastic part} of the deformation gradient $\textbf{F}^P$ represents the portion of the material's history that has been forgotten while the \textbf{elastic part} of the deformation gradient $\textbf{F}^E$ reprsents the strain or deformation of the metal coil. Thus to compute stress, $\textbf{F}^E$ should be used.
+
+\section{Overview}
+\subsection{Transfer To Grid}
+During this step, we transfer mass and momentum from each particle to the grid and use this information to compute velocity on the grid.
+
+\subsection{Grid Update}
+The grid velocities are updated by applying forces and processing for collisions and scripted objects.
+\begin{equation*}
+{\textbf{v}_i}^i = {\textbf{v}_i}^n=\frac{\Delta t}{{m_i}^n}\textbf{f}_i(\langle {\textbf{F}_p}^{E,n}\rangle)
+\end{equation*}
+After forces are applied, we can process the velocities for collisions ${\textbf{v}_i}^*\rightarrow {\bar{\textbf{v}}_{i}}^{n+1}$ and then apply friction ${\bar{\textbf{v}}_{i}}^{n+1} \rightarrow {\tilde{\textbf{v}}_{i}}^{n+1}$
+
+\subsection{Transfer To Particles}
+Velocities are interpolated back to particles using
+\begin{equation*}
+{\textbf{v}_p}^{n+1} = \sum_i{{w_{ip}^n{\tilde{\textbf{v}}_{i}}^{n+1}}}
+\end{equation*}
+\begin{redtext}
+	\ref{Stomakhin2013} uses normalized weights,
+	\begin{equation*}
+	{\textbf{v}_i}^n = \sum_p{{\textbf{v}_p}^nm_p\frac{{w_{ip}^n}}{{m_i}^n}}
+	\end{equation*}
+	since weighting with ${w_{ip}^n}$ does not result in momentum conservation while \ref{Klar2016} does not. Does this have to do with the affine momentum $\textbf{B}$?
+\end{redtext}
+
+The transfer for ${B_p}^{n+1}$ is
+\begin{equation*}
+{B_p}^{n+1}=\sum_i{w_{ip}^n{\tilde{\textbf{v}}_i}^{n+1}({\textbf{x}_i}^n-{\textbf{x}_p}^n)^T}
+\end{equation*}
+or the sum of the weighted post-collision velocities for each grid point $i$ times the displacement vector of grid point $i$ and the particular particle $p$.
+
+\subsection{Update Particle State}
+Particle positions are updated by interpolating moving grid node positions
+\begin{equation*}
+x_p^{n+1}=\sum_i{w_{ip}^n \bar{\textbf{x}}_i^{n+1}}
+\end{equation*}
+where $\bar{\textbf{x}}_i^{n+1}$ is the position of the particle after applying the velocities as a result of collisions but before applying friction.
+\end{document}

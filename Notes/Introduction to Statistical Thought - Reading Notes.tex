@@ -1,0 +1,64 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{color}			% \color
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+\usepackage{upgreek}		% \upvarphi
+\usepackage{graphicx}		% \includegraphics
+\usepackage{float}			% Figure Placement
+
+\usepackage{subfiles}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{claim}{Claim}
+
+\begin{document}
+\title{Introduction to Machine Learning - Reading Notes}
+\author{Frank Madrid}
+\maketitle
+\tableofcontents
+
+\section{Introduction}
+\subsection{A Taste of Machine Learning}
+Machine learning can 
+\subsubsection{Problems}
+\textbf{Binary Classification}:
+Given a pattern $x$ drawn from a domain $X$, estimate which value an assoicated binary random variable $y \in \{\pm1\}$ will assume.
+\begin{list}{}{}
+	\item \textbf{Online Learning}: Given a sequence of $(x_i,y_i)$ pairs, estimate $y_i$ in an instantaneous online fashion.
+	\item \textbf{Batch Learning}: Given a collection $\mathbf{X}:=\{x_1,\ldots,x_m\}$ and $\mathbf{Y}:=\{y_1,\ldots,y_m\}$ of pairs $(x_i,y_i)$, estimate $y$ for a set of so-far unseen $\mathbf{X'}=\{x_1',\ldots,x_{m'}'\}$.
+	\item \textbf{Transduction}: $\mathbf{X'}$ is known during the construction of the model.
+	\item \textbf{Active Learning}: Choose $\mathbf{X}$ for the purpose of model building.
+\end{list}
+
+\noindent\textbf{Multiclass Classification}
+
+\noindent\textbf{Structured Estimation}
+Assumes the labels of $y$ have some additional structure which can be used in the estimation process.
+
+\noindent\textbf{Regression} Estimate a real-valued variable $y \in \mathcal{R}$
+
+\section{Density Estimation}
+\subsection{Limit Theorems}
+\subsubsection{Fundamental Laws}
+\begin{theorem}[\textbf{Weak Law of Large Number}]
+	Denote by $X_1,\ldots,X_m$ random variables drawn from $p(x)$ with mean $\mu = \mathbf{E}_{X_i}[x_i]$ for all $i$. Moreover let
+	\begin{equation}
+	\bar{X}_m:=\frac{1}{m}\sum_{i=1}^m{X_i}
+	\end{equation}
+	by the empirical average over the random variables $X_i$. Then for any $\epsilon >0$ the following holds
+	\begin{equation}
+	\lim_{m\rightarrow \infty}{\text{Pr}(|\bar{X}_m-\mu|\le\epsilon)=1}
+	\end{equation}
+\end{theorem}
+
+
+\end{document}

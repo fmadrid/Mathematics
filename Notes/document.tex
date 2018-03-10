@@ -1,0 +1,55 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{color}			% \color
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+\usepackage{upgreek}		% \upvarphi
+\usepackage{graphicx}		% \includegraphics
+\usepackage{float}			% Figure Placement
+
+\usepackage{subfiles}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{claim}{Claim}
+
+\begin{document}
+\title{A Probabilistic Theory of Pattern Recognition}
+\maketitle
+\tableofcontents
+
+\section{Introduction}
+\begin{definition}
+	The \textbf{probability of error} for a classifier $g$ is
+	\begin{equation}
+	L(g)=\mathbf{P}\{g(X)\ne Y\}
+	\end{equation}
+\end{definition}
+\begin{definition}
+	The best possible classifier, $g^*$ is defined by
+	\begin{equation}
+	g^*=\text{argmin}_{g:\mathcal{R}^d\rightarrow\{1,\ldots,M\}}{\mathbf{P}\{g(x)\ne Y\}}
+	\end{equation}
+\end{definition}
+\begin{definition}
+	The \textbf{Bayes error} is the minimal probability of error and is denoted by $L* = L(G^*)$
+\end{definition}
+\begin{definition}
+	A classifier is good if it is \textbf{consistent}, that is
+	\begin{equation}
+		\lim_{n\rightarrow \infty}{\mathbf{E}L_n=L^*}
+	\end{equation}
+\end{definition}
+
+
+
+
+
+\end{document}

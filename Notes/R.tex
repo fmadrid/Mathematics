@@ -1,0 +1,68 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{color}			% \color
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+\usepackage{upgreek}		% \upvarphi
+\usepackage{graphicx}		% \includegraphics
+\usepackage{float}			% Figure Placement
+
+\usepackage{subfiles}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{claim}{Claim}
+
+\begin{document}
+\title{R}
+\author{Frank Madrid}
+\maketitle
+
+\section{Introduction}
+During the STAMP, STOMP, SCRIMP, and SCRIMP++ presentation, it was suggested that calculating the Distance Profile of some sequence $T$ of length $n$ and a subsequence length of $m$ is $\Omega(\frac{1}{m}n^2\log{n})$; however, I'm not terribly convinced. I believe the \textit{Distance Profile Problem} is reducible to the \textit{Matrix Multiplication Problem} for square matrices and since there are algorithms with a runtime complexity of $O(n^{1.68})$ for this secondary problem, I would believe the \textit{Distance Profile Problem} to be solvable in $\mathcal{O}((n-m+1)^{1.68})
+
+\noindent\textbf{Claim}: The Distance Profile Problem is reducible to the Matrix Multiplication problem.
+\begin{proof}
+	Let $T$ be a sequence of length $n$. Consider the matrix $\mathbf{T}$ whose column vectors are the subsequences of $T$,
+	\begin{equation*}
+	\mathbf{T} = 
+	\begin{bmatrix}
+	T_{(1,m)} & T_{(2,m)} & T_{(3,m)} & \dots & T_{(n-m+1,m)}
+	\end{bmatrix}^T
+	\end{equation*}
+	then
+	\begin{equation*}
+	\mathbf{T}\times \mathbf{T}^T = \mathcal{T}
+	\end{equation*}
+	such that $\mathcal{T}_{(i,j)} = T_{(i,m)}\cdot T_{(j,m)}$ or the inner products of the subsequences of $T$.
+\end{proof}
+
+\section{Definitions}
+
+\begin{definition}[The Distance Profile Problem]
+	Given two sequences $T$ and $S$, for each subsequence $T_{i,m}\in T$ find the subsequence $S_{j,m} \in S$ such that ${Distance}(T_{i,m},S_{j,m})$ is minimized where ${Distance}$ is ${EuclideanDistance}$.
+\end{definition}
+
+\begin{definition}[Matrix Multiplication Problem]
+	Given two square matrices $A_{[n,n]}$ and $B_{[n,n]}$, find the product $A\times B$.
+\end{definition}
+
+\begin{definition}
+	A \textbf{subsequence} $T_{i,m}$ of $T$ is a contiguous proper subset of the values from $T$ of length $m$ starting from position $i$. Formally, $T_{i,m} = [t_i,t_{i+1},\dots,t_{i+(m-1)}]$.
+\end{definition}
+\begin{definition}\label{def:EuclideanDistance}
+	Let $T=[t_1,t_2,\ldots,t_n]$ and $S=[s_1,s_2,\ldots,s_n]$ be two sequences of length $n$, then the \textbf{Euclidean Distance} of $T$ and $S$ is defined as
+	\begin{equation*}
+	\text{EuclideanDistance}(T,S) = \sqrt{\sum_{i=1}^n{(t_i-s_i)^2}}
+	\end{equation*}
+\end{definition}
+\section{Notes}
+
+\end{document}
