@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass{scrartcl}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 
@@ -23,50 +23,56 @@
 \newenvironment{redtext}{\color{red}}{\ignorespacesafterend}
 
 \begin{document}
-\title{DP Elastoplasticity for Sand Animation - Reading Notes}
+\title{Druker-Prager Elastoplasticity for Sand Animation}
+\subtitle{Reading Notes}
 \author{Frank Madrid}
 \maketitle
 
-\section{Introduction}
-\subsection{Paper Contributions}
+\section{Paper Contributions}
 \begin{itemize}
 	\item Builds on the work of \ref{Mast2013} and develops an implicit version of their Drucker-Prager-based elastoplasticity model for granular materials.
-	\item Uses the Material Point Method (MPM) to discretize the model since it provides a natural and efficient way of treating contact, topological change and history dependent behavior.
-	\item Replace  the particle/grid transfers used by Mast with APIC transfers \ref{Jiang 2015} which allows for more stable behavior with simulations that have higher numbers of particles per cell.
+	\item Uses the Material Point Method (MPM) to discretize the Drucker-Prager Elastoplasticity model since it provides a natural and efficient way of treating contact, topological change and history dependent behavior.
+	\item Replace  the particle/grid transfers used by \ref{Mast2013} with APIC transfers \ref{Jiang 2015} which allows for more stable behavior with simulations that have higher numbers of particles per cell.
 \end{itemize}
 
-\section{Background}
 
-\begin{definition}
-	Let the density and velocity of our object be described at each location by $\rho(x,y,r)$ and $\textbf{v}(x,y,z)$. The \textbf{conservation of mass} is
-	\begin{equation*}
-		\frac{D\rho}{Dt} + \rho\nabla \cdot \textbf{v}=0
-	\end{equation*}
-	and the \textbf{conservation of momentum} is
-	\begin{equation*}
-		\rho \frac{D\textbf{v}}{Dt} = \nabla \cdot \boldsymbol{\sigma} + \rho \textbf{g}
-	\end{equation*}
-	where $\boldsymbol{\sigma}$ is the internal stress and $\textbf{g}$ gravity.
-\end{definition}
-The law of conservation of mass indicates the rate of change of the density of an object with respect to time is equal net flow of $\textbf{v}$
-\begin{definition}
-	An \textbf{Euler-Lagrange} equation is a second-order partial differential equation whose solutions are the functions for which a given functional is stationary.
-\end{definition}
+\section{Concepts}
 
-\begin{definition}
-	The \textbf{deformation gradient} represents how deformed a material is locally. The deformation gradient $\mathbf{F}$ evolves according to
-	\begin{equation*}
-	\frac{D\textbf{F}}{dt} = (\nabla \textbf{v})\textbf{F}.
-	\end{equation*}
-\end{definition}
-
+%%%%%%%%%% Conservation of Mass %%%%%%%%%%
 \subsection{Conservation of Mass}
-\textbf{Alternate Forms}
-\begin{equation*}
-	\frac{D\rho}{Dt} + \nabla \cdot (\rho\textbf{v})=0
-\end{equation*}
+For any system closed to all transfers of matter and energy, the mass of the system must remain constant over time.
+
+\begin{definition}
+	Let the density and velocity of our object be described at each location by $\rho(x,y,r)$ and $\textbf{v}(x,y,z)$, then the \textbf{conservation of mass} is
+	\begin{equation*}
+	\frac{D\rho}{Dt} + \rho\nabla \cdot \textbf{v}=0.
+	\end{equation*}
+	where $\frac{D\rho}{Dt}$ is the \textit{material derivative} and describes the rate of change of density with respect to time while $\nabla \cdot \textbf{v}$ is the div $\textbf{v}$. \textbf{Recall}: If $\textbf{F}(x,y,z)$ is the velocity of a fluid, then div $\textbf{F}(x,y,z)$ represents the net rate of change of the mass of fluid flowing from the point $(x,y,z)$ per unit volume.
+\end{definition}
+
 \noindent\textbf{Interpretation}
-For a given closed surface in the system, the change in time of the mass enclosed by the surface is equal to the mass that traverses the surface, positive if matter goes in and negative if matter goes out.
+For a given closed surface in the system, the change in time of the mass enclosed by the surface is equal to the mass that traverses the surface, positive if matter goes in and negative if matter goes out. 
+
+%%%%%%%%%% Elastic and Plastic Deformation Gradient %%%%%%%%%%
+\subsection{Elastic and Plastic Deformation Gradient}
+\begin{definition}
+	The deformation gradient $\frac{d\textbf{F}}{dt}$ is a measure of how a material has locally rotated and deformed due to its motion. The deformation gradient is factored into its elastic $\textbf{F}^E$ and plastic $\textbf{F}^P$ parts such that $\textbf{F} = \textbf{F}^E\textbf{F}^P$.
+\end{definition}
+The plastic deformation represents the portion of the material's history that has been \textit{forgotten} (cannot be recovered) while the elastic deformation is the strain, or the tendency to revert back to its original form.
+
+\subsection{Constitutive Model}
+
+\subsection{Discretization}
+Discretizations are typically either Eulerian or Lagrangian, which differ by their frame of reference.
+
+An \textbf{Eulerian} description computes quantities of interest at fixed locations in space which feature fixed grids and are ideal for handling collisions and changes in topology.
+
+A \textbf{Lagrangian} description uses quantities that move with the material being described and tend to use moving particles often connected by a mesh which provides a straightforward way to determine how deformed the material is.
+
+The \textbf{Material Point Method} stores information on Lagrangian particles, that is each particle stores its mass and velocity, but computes forces using a fixed Eulerian grid. Since MPM uses two distinct representations, information must be transferred between them.
+
+\subsection{Particle States}
+In the MPM model, state representations are stored on particles. Each particle maintains  its mass $m_p$, position $x_p$, velocity $v_p$, affine momentum $\textbf{B}_p$ which is used for APIC transfers and approximates the spatial derivative of the grid velocity field at the end of the previous time step, and the elastic and plastic components of the deformation gradient.
 
 \subsection{Weights}
 During the information transformation process between particle and grid representations, each particle $p$ and grid node $i$ is associated with a weight $w_{ip}^n$ at time index $n$ which determines how strongly the particle and node interact.
@@ -74,46 +80,115 @@ During the information transformation process between particle and grid represen
 Weights are computed based on a kernel $w_{ip} = N({\textbf{x}_p}^n - {\textbf{x}_i}^n)$, where ${\textbf{x}_p}^n$ and ${\textbf{x}_i}^n$ are the locations of the particle and grid node locations.
 
 \subsection{Kernel}
-Choosing a kernel $N$ leads to trade offs with respect to smoothness, computational efficiency, and the width of the stencil.
 
-Tensor product splines are preferred for their computational efficiency.
-\subsection{Elastic and Plastic Deformation Gradient}
-Plasticity is represented by factoring the deformation gradient into its \textit{elastic} and \textit{plastic} parts $\textbf{F} = \textbf{F}^E\textbf{F}^P$. Consider a force which coils a metal rod. The \textbf{plastic part} of the deformation gradient $\textbf{F}^P$ represents the portion of the material's history that has been forgotten while the \textbf{elastic part} of the deformation gradient $\textbf{F}^E$ reprsents the strain or deformation of the metal coil. Thus to compute stress, $\textbf{F}^E$ should be used.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Section: Algorithm Overview
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Algorithm Overview}
 
-\section{Overview}
+%------------------------------
+% Susbection: Transfer to Grid
+%------------------------------
 \subsection{Transfer To Grid}
-During this step, we transfer mass and momentum from each particle to the grid and use this information to compute velocity on the grid.
+During this step, mass and momentum are transferred from each particle to the grid and which is used to compute velocity on the grid. Mass is transferred from each particle to its neighboring grid nodes using
+\begin{equation*}
+m_i^n = \sum_p{w_{ip}^n m_p}
+\end{equation*}
+or the mass at any particular grid node $i$ is the weighted sum of the masses of each particle $p$ where $w_{ip}^n = N(\textbf{x}_p^n-\textbf{x}_i^n)$.
 
+Since the momentum contribution from particle $p$ to node $i$ is $w_{ip}^nm_p\bar{\textbf{v}}_p(\textbf{x}_i^n)$, the full form of the velocity transfer is
+\begin{equation*}
+\textbf{v}_i^n = \frac{1}{m_i^n}\sum_p{w_{ip}^nm_p(\textbf{v}_p^n+\ldots(\textbf{x}_i^n-\textbf{x}_p^n))}
+\end{equation*}
+
+%------------------------------
+% Susbection: Grid Update
+%------------------------------
 \subsection{Grid Update}
 The grid velocities are updated by applying forces and processing for collisions and scripted objects.
 \begin{equation*}
-{\textbf{v}_i}^i = {\textbf{v}_i}^n=\frac{\Delta t}{{m_i}^n}\textbf{f}_i(\langle {\textbf{F}_p}^{E,n}\rangle)
+{\textbf{v}_i}^i = {\textbf{v}_i}^n+\frac{\Delta t}{{m_i}^n}\textbf{f}_i(\langle {\textbf{F}_p}^{E,n}\rangle)
 \end{equation*}
-After forces are applied, we can process the velocities for collisions ${\textbf{v}_i}^*\rightarrow {\bar{\textbf{v}}_{i}}^{n+1}$ and then apply friction ${\bar{\textbf{v}}_{i}}^{n+1} \rightarrow {\tilde{\textbf{v}}_{i}}^{n+1}$
+where $\textbf{f}_i(\langle\textbf{F}_p^{E,n}\rangle)$ are the forces at grid node $i$ as a result of the elastic forces in the deformation gradient. After forces are applied, we can process the velocities for collisions ${\textbf{v}_i}^*\rightarrow {\bar{\textbf{v}}_{i}}^{n+1}$ then apply friction ${\bar{\textbf{v}}_{i}}^{n+1} \rightarrow {\tilde{\textbf{v}}_{i}}^{n+1}$
 
+%------------------------------
+% Susbection: Transfer to Particles
+%------------------------------
 \subsection{Transfer To Particles}
 Velocities are interpolated back to particles using
 \begin{equation*}
-{\textbf{v}_p}^{n+1} = \sum_i{{w_{ip}^n{\tilde{\textbf{v}}_{i}}^{n+1}}}
+{\textbf{v}_p}^{n+1} = \sum_i{{w_{ip}^n{\tilde{\textbf{v}}_{i}}^{n+1}}}.
 \end{equation*}
-\begin{redtext}
-	\ref{Stomakhin2013} uses normalized weights,
-	\begin{equation*}
-	{\textbf{v}_i}^n = \sum_p{{\textbf{v}_p}^nm_p\frac{{w_{ip}^n}}{{m_i}^n}}
-	\end{equation*}
-	since weighting with ${w_{ip}^n}$ does not result in momentum conservation while \ref{Klar2016} does not. Does this have to do with the affine momentum $\textbf{B}$?
-\end{redtext}
-
 The transfer for ${B_p}^{n+1}$ is
 \begin{equation*}
-{B_p}^{n+1}=\sum_i{w_{ip}^n{\tilde{\textbf{v}}_i}^{n+1}({\textbf{x}_i}^n-{\textbf{x}_p}^n)^T}
+{B_p}^{n+1}=\sum_i{w_{ip}^n{\tilde{\textbf{v}}_i}^{n+1}({\textbf{x}_i}^n-{\textbf{x}_p}^n)^T}.
 \end{equation*}
-or the sum of the weighted post-collision velocities for each grid point $i$ times the displacement vector of grid point $i$ and the particular particle $p$.
 
-\subsection{Update Particle State}
+%------------------------------
+% Susbection: Update Particle States
+%------------------------------
+\subsection{Update Particle States}
+\textbf{Recall}: The particle state includes information about the particle's mass, position, velocity, affine momentum and deformation gradient. Mass is constant, while velocity and affine momentum were updated in a previous step. Leaving position and deformation gradient state information.
+
 Particle positions are updated by interpolating moving grid node positions
 \begin{equation*}
 x_p^{n+1}=\sum_i{w_{ip}^n \bar{\textbf{x}}_i^{n+1}}
 \end{equation*}
-where $\bar{\textbf{x}}_i^{n+1}$ is the position of the particle after applying the velocities as a result of collisions but before applying friction.
+where $\bar{\textbf{x}}_i^{n+1}$ is the particle's position after applying velocities as a result of collisions. Since $\frac{D\textbf{F}}{Dt} = (\nabla \textbf{v})\textbf{F}$ is just a normal time derivative,
+\begin{equation*}
+\textbf{F}_p^{n+1} = \textbf{F}_p^n + \delta t (\nabla \textbf{v})_p\textbf{F}_p^n
+\end{equation*}
+where
+\begin{equation*}
+(\nabla \textbf{v})_p = \sum_p{\bar{\textbf{v}}_i^{n+1}(\nabla w_{ip}^n)^T}
+\end{equation*}
+
+%------------------------------
+% Subsection: Plasticity and Hardening
+%------------------------------
+\subsection{Plasticity and Hardening}
+
+%------------------------------
+% Subsection: Implicity Velocity Update
+%------------------------------
+\subsection{Implicit Velocity Update}
+
+%------------------------------
+% Subsection: Initialization
+%------------------------------
+\subsection{Initialization}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Section: Forces
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Forces}
+Forces are obtained by differentiating a discretization of the potential energy with respect to the motion of grid nodes. Potential energy is computed by integrating the energy density with respect to volume,
+\begin{equation*}
+\Psi = \int_\Omega{\psi dV}
+\end{equation*}
+The potential energy is discretized over a sum on particles,
+\begin{equation*}
+\Psi = \sum_p{V_p^0\psi(\textbf{F}_p^E)}
+\end{equation*}
+where the force on a particular particle is
+\begin{equation*}
+\textbf{f}_p = -\frac{\partial \Psi}{\partial x_p}
+\end{equation*}
+The potential energy of the material can be expressed in terms of the locations of the grid nodes. This relationships are used to compute forces on the grid nodes.
+\begin{equation*}
+\Psi(\langle \textbf{x}_i\rangle) = \sum_p{V_p^0\psi\big(\textbf{F}_p^E(\langle \textbf{x}_i\rangle)\big)}
+\end{equation*}
+\begin{equation*}
+\Delta \textbf{F}_p^E(\langle \textbf{x}_i\rangle) = \textbf{F}_p^{E,n}\sum_i{(\textbf{x}_i - \textbf{x}_i^n)(\nabla w_{ip}^n)^T}
+\end{equation*}
+
+%------------------------------
+% Subsection: Constitutive Model
+%------------------------------
+\subsection{Constitutive Model}
+The model is written in terms of the singular value decomposition $\textbf{F} = \textbf{U}\mathbf{\Sigma}\textbf{V}^T$ as
+\begin{equation*}
+\psi(\textbf{F}) = \mu \text{trace}((\ln\mathbf{\Sigma})^2) + \frac{1}{2}\lambda(\text{trace}(\ln{\mathbf{\Sigma}}))^2
+\end{equation*}
+
 \end{document}
